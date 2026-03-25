@@ -1,11 +1,10 @@
 import React, { useState } from "react";
-import desunLogo from "../../assets/logo.png";
+import Desunlogo from "../../assets/Desun Logo_.png";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Button } from "../index";
+import { Button } from "../index"; // ✅ Make sure Button is correctly exported
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
-
   const location = useLocation();
   const currentPath = location.pathname;
 
@@ -20,19 +19,14 @@ const Header = () => {
   return (
     <header className="w-full shadow-sm bg-white sticky top-0 z-50">
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
-        {/* ✅ Logo */}
+        {/* Logo */}
         <div className="flex items-center gap-2">
-          <img
-            src={desunLogo}
-            className="w-9 h-9 sm:w-10 sm:h-10 object-contain"
-            alt="logo"
-          />
-          <span className="text-lg sm:text-xl font-bold text-gray-800">
-            Desun Academy
-          </span>
+          <div className="w-60 ">
+            <img src={Desunlogo} alt="logo" />
+          </div>
         </div>
 
-        {/* ✅ Desktop Nav */}
+        {/* Desktop Nav */}
         <nav className="hidden md:flex items-center gap-6">
           <NavLink
             to="/"
@@ -62,7 +56,7 @@ const Header = () => {
           </NavLink>
         </nav>
 
-        {/* ✅ Desktop Buttons */}
+        {/* Desktop Buttons */}
         <div className="hidden md:flex items-center gap-3">
           {isLoginPage && <Button text="Logout" variant="danger" />}
 
@@ -74,12 +68,12 @@ const Header = () => {
 
           {!isSignupPage && !isLoginPage && (
             <Link to="/signup">
-              <Button text="SignUp" variant="signup" />
+              <Button text="Sign Up" variant="signup" />{" "}
             </Link>
           )}
         </div>
 
-        {/* ✅ Hamburger (INSIDE header now) */}
+        {/* Hamburger */}
         <button
           className="md:hidden flex flex-col gap-1"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -90,7 +84,7 @@ const Header = () => {
         </button>
       </div>
 
-      {/* ✅ Mobile Menu (fixed design) */}
+      {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-white border-t shadow-sm">
           <div className="flex flex-col items-center gap-3 py-4">
@@ -101,7 +95,6 @@ const Header = () => {
             >
               Home
             </Link>
-
             <Link
               to="/about"
               onClick={() => setMenuOpen(false)}
@@ -109,7 +102,6 @@ const Header = () => {
             >
               Contests
             </Link>
-
             <Link
               to="/contact"
               onClick={() => setMenuOpen(false)}
@@ -130,7 +122,8 @@ const Header = () => {
 
               {!isSignupPage && !isLoginPage && (
                 <Link to="/signup" onClick={() => setMenuOpen(false)}>
-                  <Button text="SignUp" variant="signup" />
+                  <Button text="Sign Up" variant="success" />{" "}
+                  {/* ✅ valid variant */}
                 </Link>
               )}
             </div>
