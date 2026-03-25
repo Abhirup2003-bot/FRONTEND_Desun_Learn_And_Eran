@@ -1,5 +1,5 @@
 import React from "react";
-import desunLogo from "../../assets/logo.png";
+import Desunlogo from "../../assets/Desun Logo_.png";
 
 const Footer = () => {
   const footerData = {
@@ -16,9 +16,10 @@ const Footer = () => {
         <div className="col-span-1 sm:col-span-2 lg:col-span-2">
           <div className="flex gap-2 items-center">
             <div className="w-8 h-8 sm:w-10 sm:h-10 mr-1 sm:mr-2">
-              <img src={desunLogo} className="w-full h-full object-cover" />
+              <div className="w-50">
+                <img src={Desunlogo} className="  object-cover" />
+              </div>
             </div>
-            <div className="text-base sm:text-xl font-bold">Desun Academy</div>
           </div>
           <p className="text-sm text-slate-500 mt-2 max-w-sm">
             Build your career with modern learning, real-world projects, and a
