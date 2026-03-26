@@ -5,6 +5,7 @@ import desunLogo from "../assets/logo.png";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
+import { toast } from "react-hot-toast"; // ✅ add this
 
 const Login = () => {
   const navigate = useNavigate();
@@ -12,16 +13,15 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const [role, setRole] = useState("student"); // ✅ add this
+
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-
-  const formData = { email, password };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
     if (name === "email") setEmail(value);
-
     if (name === "password") setPassword(value);
   };
 
@@ -31,19 +31,15 @@ const Login = () => {
     setLoading(true);
 
     try {
-      console.log("Sending request...");
-
       const response = await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn/logInUser",
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn/login", // ✅ FIXED URL
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }),
+          body: JSON.stringify({ email, password, role }),
           credentials: "include",
         },
       );
-
-      console.log("Response status:", response.status);
 
       const data = await response.json().catch(() => ({}));
 
@@ -54,7 +50,7 @@ const Login = () => {
       toast.success("Login Successfully");
       navigate("/");
     } catch (err) {
-      console.error("Signup error:", err);
+      console.error("Login error:", err); // ✅ fixed
 
       if (err.message === "Failed to fetch") {
         toast.error("Server not reachable (backend down)");
@@ -67,7 +63,6 @@ const Login = () => {
       setLoading(false);
     }
   }
-
   return (
     <>
       <div className="min-h-screen flex flex-col lg:flex-row">
