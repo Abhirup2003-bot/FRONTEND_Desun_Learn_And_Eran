@@ -6,24 +6,66 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 
 const Login = () => {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: "",
-  });
+  const navigate = useNavigate();
 
-  const [role, setRole] = useState("student");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const formData = { email, password };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
+    const { name, value } = e.target;
+
+    if (name === "email") setEmail(value);
+
+    if (name === "password") setPassword(value);
   };
 
-  const handleLogin = () => {
-    console.log("Login as:", role);
-    console.log(formData);
-  };
+  async function onClickHandler(e) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      console.log("Sending request...");
+
+      const response = await fetch(
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn/logInUser",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email, password }),
+          credentials: "include",
+        },
+      );
+
+      console.log("Response status:", response.status);
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(data?.message || "Login failed");
+      }
+
+      toast.success("Login Successfully");
+      navigate("/");
+    } catch (err) {
+      console.error("Signup error:", err);
+
+      if (err.message === "Failed to fetch") {
+        toast.error("Server not reachable (backend down)");
+      } else {
+        toast.error(err.message);
+      }
+
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <>
@@ -122,7 +164,7 @@ const Login = () => {
                 label="Email Address"
                 type="email"
                 name="email"
-                value={formData.email}
+                value={email}
                 onChange={handleChange}
                 icon={FaEnvelope}
               />
@@ -149,7 +191,7 @@ const Login = () => {
               </div>
 
               <Button
-                onClick={handleLogin}
+                onClick={onClickHandler}
                 text={`Login as ${role}`}
                 variant="success"
               />
