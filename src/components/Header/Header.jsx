@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import Desunlogo from "../../assets/Desun Logo_.png";
-import { Link, NavLink, useLocation } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../index";
 
 const Header = () => {
@@ -8,6 +8,14 @@ const Header = () => {
   const [search, setSearch] = useState("");
   const location = useLocation();
   const currentPath = location.pathname;
+  const token = Cookies.get("token");
+  const navigate = useNavigate();
+  const isLoggedIn = !!token;
+
+  const handleLogout = () => {
+    Cookies.remove("token");
+    navigate("/login");
+  };
 
   const linkClass =
     "px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-[#82C600] hover:text-white transition";
@@ -76,7 +84,7 @@ const Header = () => {
         </div>
 
         {/* Desktop Buttons */}
-        <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
+        {/* <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
           {isLoginPage && <Button text="Logout" variant="danger" />}
 
           {!isSignupPage && !isLoginPage && (
@@ -90,7 +98,24 @@ const Header = () => {
               <Button text="Sign Up" variant="signup" />
             </Link>
           )}
-        </div>
+        </div> */}
+        {isLoggedIn ? (
+          <Button text="Logout" variant="danger" onClick={handleLogout} />
+        ) : (
+          <>
+            {!isLoginPage && (
+              <Link to="/login">
+                <Button text="Login" variant="success" />
+              </Link>
+            )}
+
+            {!isSignupPage && (
+              <Link to="/signup">
+                <Button text="Sign Up" variant="signup" />
+              </Link>
+            )}
+          </>
+        )}
 
         {/* Hamburger */}
         <button
