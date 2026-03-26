@@ -10,7 +10,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "-": "^0.0.1",
     "@tailwindcss/vite": "^4.2.2",
+    "cookies": "^0.9.1",
+    "js": "^0.1.0",
     "lucide-react": "^1.6.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
