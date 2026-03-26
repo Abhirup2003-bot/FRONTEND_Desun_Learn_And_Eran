@@ -12,82 +12,43 @@ import { toast } from "react-toastify";
 const SignUpPage = () => {
   const navigate = useNavigate();
 
-  const [name, setName] = useState("");
+  const [userName, setuserName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // formData (you added this, so I kept it)
-  const formData = { name, email, password };
+  const formData = { userName, email, password };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "name") setName(value);
+    if (name === "userName") setuserName(value); // ✅ FIXED
     if (name === "email") setEmail(value);
-    // if (name === "phone") setphoneNumber(value); // ✅ fixed
+    if (name === "phone") setphoneNumber(value);
     if (name === "password") setPassword(value);
   };
 
-  // async function onClickHandler(e) {
-  //   e.preventDefault();
-  //   setError("");
-  //   setLoading(true);
-
-  //   try {
-  //     const response = await fetch(
-  //       "https://learn-earn-contest-2.onrender.com/api/v1/auth/register",
-
-  //       {
-  //         method: "POST",
-  //         headers: { "Content-Type": "application/json" },
-  //         body: JSON.stringify({ name, email, password }),
-  //         credentials: "include",
-  //       },
-  //     );
-
-  //     const data = await response.json().catch(() => ({}));
-
-  //     if (!response.ok) {
-  //       const msg = data?.message || "Signup failed";
-  //       toast.error(msg);
-  //       setError(msg);
-  //       setLoading(false);
-  //       return;
-  //     }
-
-  //     toast.success("User Registered Successfully");
-  //     navigate("/");
-  //   } catch (err) {
-  //     console.error("Signup error:", err);
-  //     const msg = "Something went wrong";
-  //     toast.error(msg);
-  //     setError(msg);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // }
   async function onClickHandler(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
-      console.log("Sending request..."); // ✅ DEBUG
+      console.log("Sending request...");
 
       const response = await fetch(
-        "https://learn-earn-contest-2.onrender.com/api/v1/auth/register",
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ name, email, password }),
+          body: JSON.stringify({ userName, email, password, phoneNumber }),
           credentials: "include",
         },
       );
 
-      console.log("Response status:", response.status); // ✅ DEBUG
+      console.log("Response status:", response.status);
 
       const data = await response.json().catch(() => ({}));
 
@@ -100,7 +61,6 @@ const SignUpPage = () => {
     } catch (err) {
       console.error("Signup error:", err);
 
-      // 🔥 Better error message
       if (err.message === "Failed to fetch") {
         toast.error("Server not reachable (backend down)");
       } else {
@@ -160,12 +120,10 @@ const SignUpPage = () => {
       {/* RIGHT SIDE */}
       <div className="lg:w-1/2 w-full flex items-center justify-center bg-gray-100 p-4">
         <div className="w-full max-w-md">
-          {/* LOGO */}
           <div className="flex justify-center mb-3">
             <img src={desunLogo} alt="logo" className="h-16 w-16 " />
           </div>
 
-          {/* TITLE */}
           <div className="text-center my-2">
             <h2 className="text-2xl lg:text-3xl font-sans font-bold text-green-600">
               Register to Desun Academy
@@ -176,20 +134,19 @@ const SignUpPage = () => {
             </p>
           </div>
 
-          {/* FORM */}
           <div className="flex flex-col gap-3">
             <InputField
               label="UserName"
               type="text"
-              name="name"
+              name="userName"
               icon={FaUser}
-              value={name}
+              value={userName}
               onChange={handleChange}
             />
 
             <InputField
               label="Phone Number"
-              type="tel"
+              type="number"
               name="phone"
               icon={FaPhoneAlt}
               value={phoneNumber}
@@ -205,45 +162,6 @@ const SignUpPage = () => {
               onChange={handleChange}
             />
 
-            {/* GENDER */}
-            <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-600 mb-1">
-                Gender
-              </label>
-
-              <div className="flex gap-3">
-                <label className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg cursor-pointer hover:border-green-500 transition text-sm">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="male"
-                    className="accent-green-600"
-                  />
-                  Male
-                </label>
-
-                <label className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg cursor-pointer hover:border-green-500 transition text-sm">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="female"
-                    className="accent-green-600"
-                  />
-                  Female
-                </label>
-
-                <label className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg cursor-pointer hover:border-green-500 transition text-sm">
-                  <input
-                    type="radio"
-                    name="gender"
-                    value="other"
-                    className="accent-green-600"
-                  />
-                  Other
-                </label>
-              </div>
-            </div>
-
             <InputField
               label="Password"
               type="password"
@@ -254,11 +172,9 @@ const SignUpPage = () => {
               iconEye={FaRegEyeSlash}
             />
 
-            {/* BUTTON */}
             <Button text="Signup" variant="success" onClick={onClickHandler} />
           </div>
 
-          {/* FOOTER */}
           <p className="text-center text-sm text-gray-500 mt-4">
             Need access?{" "}
             <Link
