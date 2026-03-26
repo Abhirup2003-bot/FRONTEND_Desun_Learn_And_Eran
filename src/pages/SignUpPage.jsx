@@ -24,7 +24,7 @@ const SignUpPage = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "userName") setuserName(value); // ✅ FIXED
+    if (name === "userName") setuserName(value); 
     if (name === "email") setEmail(value);
     if (name === "phone") setphoneNumber(value);
     if (name === "password") setPassword(value);
@@ -38,8 +38,8 @@ const SignUpPage = () => {
     try {
       console.log("Sending request...");
 
-      const response = await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn/register",
+      const response = await fetch(//
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn/register",  
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

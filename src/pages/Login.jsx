@@ -5,7 +5,7 @@ import desunLogo from "../assets/logo.png";
 import { FaEnvelope, FaLock } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
-import { toast } from "react-hot-toast"; // ✅ add this
+import { toast } from "react-toastify";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -32,7 +32,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn/login", // ✅ FIXED URL
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn//logInUser", // ✅ FIXED URL
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -169,7 +169,7 @@ const Login = () => {
                 label="Password"
                 type="password"
                 name="password"
-                value={formData.password}
+                value={password}
                 onChange={handleChange}
                 icon={FaLock}
                 iconEye={FaRegEyeSlash}
