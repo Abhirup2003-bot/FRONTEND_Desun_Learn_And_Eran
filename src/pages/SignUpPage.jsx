@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import { InputField, Button } from "../components";
+import { InputField, Button } from "../components/index";
 
 import desunLogo from "../assets/logo.png";
 import Desunlogo from "../assets/Desun Logo_.png";
@@ -12,59 +12,102 @@ import { toast } from "react-toastify";
 const SignUpPage = () => {
   const navigate = useNavigate();
 
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    phone: "",
-    gender: "",
-  });
-
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [phoneNumber, setphoneNumber] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ✅ Single handler for all inputs
+  // formData (you added this, so I kept it)
+  const formData = { name, email, password };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    if (name === "name") setName(value);
+    if (name === "email") setEmail(value);
+    // if (name === "phone") setphoneNumber(value); // ✅ fixed
+    if (name === "password") setPassword(value);
   };
 
+  // async function onClickHandler(e) {
+  //   e.preventDefault();
+  //   setError("");
+  //   setLoading(true);
+
+  //   try {
+  //     const response = await fetch(
+  //       "https://learn-earn-contest-2.onrender.com/api/v1/auth/register",
+
+  //       {
+  //         method: "POST",
+  //         headers: { "Content-Type": "application/json" },
+  //         body: JSON.stringify({ name, email, password }),
+  //         credentials: "include",
+  //       },
+  //     );
+
+  //     const data = await response.json().catch(() => ({}));
+
+  //     if (!response.ok) {
+  //       const msg = data?.message || "Signup failed";
+  //       toast.error(msg);
+  //       setError(msg);
+  //       setLoading(false);
+  //       return;
+  //     }
+
+  //     toast.success("User Registered Successfully");
+  //     navigate("/");
+  //   } catch (err) {
+  //     console.error("Signup error:", err);
+  //     const msg = "Something went wrong";
+  //     toast.error(msg);
+  //     setError(msg);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
   async function onClickHandler(e) {
     e.preventDefault();
     setError("");
     setLoading(true);
 
     try {
+      console.log("Sending request..."); // ✅ DEBUG
+
       const response = await fetch(
-        "http://localhost:8000/api/v1/user/register-user",
+        "https://learn-earn-contest-2.onrender.com/api/v1/auth/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData), // ✅ send full data
+          body: JSON.stringify({ name, email, password }),
           credentials: "include",
         },
       );
 
+      console.log("Response status:", response.status); // ✅ DEBUG
+
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        const msg = data?.message || "Signup failed";
-        toast.error(msg);
-        setError(msg);
-        return;
+        throw new Error(data?.message || "Signup failed");
       }
 
       toast.success("User Registered Successfully");
       navigate("/");
     } catch (err) {
       console.error("Signup error:", err);
-      const msg = "Something went wrong";
-      toast.error(msg);
-      setError(msg);
+
+      // 🔥 Better error message
+      if (err.message === "Failed to fetch") {
+        toast.error("Server not reachable (backend down)");
+      } else {
+        toast.error(err.message);
+      }
+
+      setError(err.message);
     } finally {
       setLoading(false);
     }
@@ -86,13 +129,32 @@ const SignUpPage = () => {
           </h1>
 
           <p className="text-gray-200 text-sm lg:text-base mb-8">
-            Join thousands of learners mastering real-world skills.
+            Join thousands of learners mastering real-world skills, solving
+            challenges, and building impactful projects.
           </p>
 
           <button className="bg-white text-green-700 px-6 py-3 rounded-full font-semibold shadow-lg hover:scale-105 transition">
             Get Started
           </button>
+
+          <div className="flex gap-6 mt-12 text-sm">
+            <div>
+              <h3 className="text-2xl font-bold">10K+</h3>
+              <p className="text-gray-200">Students</p>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold">500+</h3>
+              <p className="text-gray-200">Courses</p>
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold">4.8⭐</h3>
+              <p className="text-gray-200">Rating</p>
+            </div>
+          </div>
         </div>
+
+        <div className="absolute w-80 h-80 bg-white/10 rounded-full blur-3xl top-[-60px] left-[-60px]"></div>
+        <div className="absolute w-80 h-80 bg-green-300/20 rounded-full blur-3xl bottom-[-60px] right-[-60px]"></div>
       </div>
 
       {/* RIGHT SIDE */}
@@ -100,14 +162,18 @@ const SignUpPage = () => {
         <div className="w-full max-w-md">
           {/* LOGO */}
           <div className="flex justify-center mb-3">
-            <img src={desunLogo} alt="logo" className="h-16 w-16" />
+            <img src={desunLogo} alt="logo" className="h-16 w-16 " />
           </div>
 
           {/* TITLE */}
           <div className="text-center my-2">
-            <h2 className="text-2xl font-bold text-green-600">
+            <h2 className="text-2xl lg:text-3xl font-sans font-bold text-green-600">
               Register to Desun Academy
             </h2>
+
+            <p className="text-gray-500 text-sm mt-1">
+              Enter your credentials to access your account
+            </p>
           </div>
 
           {/* FORM */}
@@ -117,7 +183,7 @@ const SignUpPage = () => {
               type="text"
               name="name"
               icon={FaUser}
-              value={formData.name}
+              value={name}
               onChange={handleChange}
             />
 
@@ -126,7 +192,7 @@ const SignUpPage = () => {
               type="tel"
               name="phone"
               icon={FaPhoneAlt}
-              value={formData.phone}
+              value={phoneNumber}
               onChange={handleChange}
             />
 
@@ -134,27 +200,47 @@ const SignUpPage = () => {
               label="Email Address"
               type="email"
               name="email"
+              value={email}
               icon={FaEnvelope}
-              value={formData.email}
               onChange={handleChange}
             />
 
             {/* GENDER */}
-            <div>
-              <label className="text-sm text-gray-600">Gender</label>
-              <div className="flex gap-3 mt-1">
-                {["male", "female", "other"].map((g) => (
-                  <label key={g} className="flex items-center gap-2">
-                    <input
-                      type="radio"
-                      name="gender"
-                      value={g}
-                      checked={formData.gender === g}
-                      onChange={handleChange}
-                    />
-                    {g}
-                  </label>
-                ))}
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-600 mb-1">
+                Gender
+              </label>
+
+              <div className="flex gap-3">
+                <label className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg cursor-pointer hover:border-green-500 transition text-sm">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="male"
+                    className="accent-green-600"
+                  />
+                  Male
+                </label>
+
+                <label className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg cursor-pointer hover:border-green-500 transition text-sm">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="female"
+                    className="accent-green-600"
+                  />
+                  Female
+                </label>
+
+                <label className="flex items-center gap-2 px-3 py-2 bg-white border rounded-lg cursor-pointer hover:border-green-500 transition text-sm">
+                  <input
+                    type="radio"
+                    name="gender"
+                    value="other"
+                    className="accent-green-600"
+                  />
+                  Other
+                </label>
               </div>
             </div>
 
@@ -162,24 +248,23 @@ const SignUpPage = () => {
               label="Password"
               type="password"
               name="password"
+              value={password}
+              onChange={handleChange}
               icon={FaLock}
               iconEye={FaRegEyeSlash}
-              value={formData.password}
-              onChange={handleChange}
             />
 
             {/* BUTTON */}
-            <Button
-              text={loading ? "Signing up..." : "Signup"}
-              variant="success"
-              onClick={onClickHandler}
-            />
+            <Button text="Signup" variant="success" onClick={onClickHandler} />
           </div>
 
           {/* FOOTER */}
           <p className="text-center text-sm text-gray-500 mt-4">
-            Already have an account?{" "}
-            <Link to="/login" className="text-green-600 hover:underline">
+            Need access?{" "}
+            <Link
+              to="/login"
+              className="text-green-600 cursor-pointer hover:underline"
+            >
               Login
             </Link>
           </p>

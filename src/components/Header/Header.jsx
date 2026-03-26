@@ -1,15 +1,16 @@
 import React, { useState } from "react";
 import Desunlogo from "../../assets/Desun Logo_.png";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Button } from "../index"; // ✅ Make sure Button is correctly exported
+import { Button } from "../index";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
+  const [search, setSearch] = useState("");
   const location = useLocation();
   const currentPath = location.pathname;
 
   const linkClass =
-    "px-4 py-2 rounded-md text-sm font-medium text-gray-700 hover:bg-[#82C600] hover:text-white transition";
+    "px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-[#82C600] hover:text-white transition";
 
   const activeClass = "bg-[#82C600] text-white";
 
@@ -18,16 +19,20 @@ const Header = () => {
 
   return (
     <header className="w-full shadow-sm bg-white sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 py-3">
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-3 sm:px-6 py-3 gap-2">
         {/* Logo */}
-        <div className="flex items-center gap-2">
-          <div className="w-60 ">
-            <img src={Desunlogo} alt="logo" />
+        <div className="flex items-center gap-2 flex-shrink-0">
+          <div className="w-32 sm:w-40 md:w-48 lg:w-56">
+            <img
+              src={Desunlogo}
+              alt="logo"
+              className="w-full h-auto object-contain"
+            />
           </div>
         </div>
 
         {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-6">
+        <nav className="hidden md:flex items-center gap-3 lg:gap-6">
           <NavLink
             to="/"
             className={({ isActive }) =>
@@ -56,8 +61,22 @@ const Header = () => {
           </NavLink>
         </nav>
 
+        {/* Search Bar */}
+        <div className="hidden md:flex items-center flex-1 max-w-xs lg:max-w-sm mx-2">
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full px-3 py-2 text-xs sm:text-sm border rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#82C600]"
+          />
+          <button className="px-3 py-2 bg-[#82C600] text-white text-xs sm:text-sm rounded-r-md hover:bg-[#6ea800] transition whitespace-nowrap">
+            Search
+          </button>
+        </div>
+
         {/* Desktop Buttons */}
-        <div className="hidden md:flex items-center gap-3">
+        <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
           {isLoginPage && <Button text="Logout" variant="danger" />}
 
           {!isSignupPage && !isLoginPage && (
@@ -68,14 +87,14 @@ const Header = () => {
 
           {!isSignupPage && !isLoginPage && (
             <Link to="/signup">
-              <Button text="Sign Up" variant="signup" />{" "}
+              <Button text="Sign Up" variant="signup" />
             </Link>
           )}
         </div>
 
         {/* Hamburger */}
         <button
-          className="md:hidden flex flex-col gap-1"
+          className="md:hidden flex flex-col gap-1 ml-2"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           <span className="w-6 h-0.5 bg-gray-800"></span>
@@ -87,7 +106,17 @@ const Header = () => {
       {/* Mobile Menu */}
       {menuOpen && (
         <div className="md:hidden bg-white border-t shadow-sm">
-          <div className="flex flex-col items-center gap-3 py-4">
+          <div className="flex flex-col gap-4 py-4 px-4">
+            {/* Search */}
+            <input
+              type="text"
+              placeholder="Search..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 focus:ring-[#82C600]"
+            />
+
+            {/* Links */}
             <Link
               to="/"
               onClick={() => setMenuOpen(false)}
@@ -122,8 +151,7 @@ const Header = () => {
 
               {!isSignupPage && !isLoginPage && (
                 <Link to="/signup" onClick={() => setMenuOpen(false)}>
-                  <Button text="Sign Up" variant="success" />{" "}
-                  {/* ✅ valid variant */}
+                  <Button text="Sign Up" variant="success" />
                 </Link>
               )}
             </div>
