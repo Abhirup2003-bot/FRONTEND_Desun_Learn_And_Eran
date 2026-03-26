@@ -20,30 +20,30 @@ const Header = () => {
   const isLoginPage = currentPath === "/login";
   const isSignupPage = currentPath === "/signup";
 
-  // ✅ CHECK LOGIN USING FETCH (cookie-based)
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const res = await fetch(
-          "https://backend-three-tau-88.vercel.app/app/v1/Learn/me",
-          {
-            method: "GET",
-            credentials: "include", // 🔥 IMPORTANT
-          },
-        );
+  // // ✅ CHECK LOGIN USING FETCH (cookie-based)
+  // useEffect(() => {
+  //   const checkAuth = async () => {
+  //     try {
+  //       const res = await fetch(
+  //         "https://backend-three-tau-88.vercel.app/app/v1/Learn/me",
+  //         {
+  //           method: "GET",
+  //           credentials: "include", // 🔥 IMPORTANT
+  //         },
+  //       );
 
-        if (res.ok) {
-          setIsLoggedIn(true);
-        } else {
-          setIsLoggedIn(false);
-        }
-      } catch (err) {
-        setIsLoggedIn(false);
-      }
-    };
+  //       if (res.ok) {
+  //         setIsLoggedIn(true);
+  //       } else {
+  //         setIsLoggedIn(false);
+  //       }
+  //     } catch (err) {
+  //       setIsLoggedIn(false);
+  //     }
+  //   };
 
-    checkAuth();
-  }, [location]);
+  //   checkAuth();
+  // }, [location]);
 
   // ✅ LOGOUT USING FETCH
   const handleLogout = async () => {
