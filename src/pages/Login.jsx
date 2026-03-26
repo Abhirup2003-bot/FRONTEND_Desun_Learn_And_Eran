@@ -32,7 +32,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn//logInUser", // ✅ FIXED URL
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn/logInUser",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
