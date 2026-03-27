@@ -9,7 +9,7 @@ import { FaEnvelope, FaLock, FaUser, FaPhoneAlt } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { registerUser } from "../features/authSlice/signupSlice";
+import { registerUser } from "../features/authSlice/authSlice";
 
 const SignUpPage = () => {
   const navigate = useNavigate();

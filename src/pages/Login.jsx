@@ -7,7 +7,7 @@ import { FaRegEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
-import { loginUser } from "../features/authSlice/loginSlice";
+import { loginUser } from "../features/authSlice/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -18,7 +18,7 @@ const Login = () => {
   const [error, setError] = useState("");
 
   const dispatch = useDispatch();
-  const { loading } = useSelector((state) => state.login);
+  const { loading } = useSelector((state) => state.auth);
 
   async function onClickHandler(e) {
     e.preventDefault();

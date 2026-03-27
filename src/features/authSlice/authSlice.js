@@ -1,10 +1,11 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+// LOGIN
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await fetch(
+      const res = await fetch(
         "https://backend-three-tau-88.vercel.app/app/v1/Learn/logInUser",
         {
           method: "POST",
@@ -14,21 +15,48 @@ export const loginUser = createAsyncThunk(
         },
       );
 
-      const data = await response.json().catch(() => ({}));
+      const data = await res.json().catch(() => ({}));
 
-      // ✅ FIXED (use msg not message)
-      if (!response.ok) {
+      if (!res.ok) {
         return rejectWithValue(data?.msg || "Login failed");
       }
 
       return data;
-    } catch (err) {
+    } catch {
       return rejectWithValue("Server not reachable");
     }
   },
 );
 
-const loginSlice = createSlice({
+// REGISTER
+export const registerUser = createAsyncThunk(
+  "auth/registerUser",
+  async ({ userName, email, password, phoneNumber }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ userName, email, password, phoneNumber }),
+          credentials: "include",
+        },
+      );
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        return rejectWithValue(data?.msg || "Signup failed");
+      }
+
+      return data;
+    } catch {
+      return rejectWithValue("Server not reachable");
+    }
+  },
+);
+
+const authSlice = createSlice({
   name: "auth",
   initialState: {
     isLoggedIn: false,
@@ -44,9 +72,9 @@ const loginSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+      // LOGIN
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
-        state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
@@ -56,10 +84,15 @@ const loginSlice = createSlice({
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        state.isLoggedIn = false;
+      })
+
+      // SIGNUP
+      .addCase(registerUser.fulfilled, (state, action) => {
+        state.isLoggedIn = true;
+        state.user = action.payload.user;
       });
   },
 });
 
-export const { logout } = loginSlice.actions;
-export default loginSlice.reducer;
+export const { logout } = authSlice.actions;
+export default authSlice.reducer;

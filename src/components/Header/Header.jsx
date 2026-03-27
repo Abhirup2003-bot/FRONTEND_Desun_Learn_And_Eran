@@ -3,7 +3,7 @@ import Desunlogo from "../../assets/Desun Logo_.png";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../index";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../features/authSlice/loginSlice";
+import { logout } from "../../features/authSlice/authSlice";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -16,7 +16,7 @@ const Header = () => {
   const dispatch = useDispatch();
 
   // ✅ GET LOGIN STATE FROM REDUX
-  const { isLoggedIn } = useSelector((state) => state.login);
+  const { isLoggedIn } = useSelector((state) => state.auth);
 
   const linkClass =
     "px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-[#82C600] hover:text-white transition";
