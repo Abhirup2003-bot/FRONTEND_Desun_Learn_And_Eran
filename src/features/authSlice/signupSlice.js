@@ -4,11 +4,11 @@ export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async ({ userName, email, password, phoneNumber }, { rejectWithValue }) => {
     try {
-      const response = fetch(
+      const response = await fetch(
         "https://backend-three-tau-88.vercel.app/app/v1/Learn/register",
         {
           method: "POST",
-          headers: { "Contain-Type": "application/json" },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ userName, email, password, phoneNumber }),
           credentials: "include",
         },
@@ -16,7 +16,7 @@ export const registerUser = createAsyncThunk(
       const data = await response.json().catch(() => ({}));
 
       if (!response.ok) {
-        return registerUser(data?.msg || "Signup failed ");
+        return rejectWithValue(data?.msg || "Signup failed ");
       }
       return data;
     } catch (err) {

@@ -151,7 +151,11 @@ const SignUpPage = () => {
               iconEye={FaRegEyeSlash}
             />
 
-            <Button text="Signup" variant="success" onClick={onClickHandler} />
+            <Button
+              text={loading ? "Signing up..." : "Signup"}
+              variant="success"
+              onClick={onClickHandler}
+            />
           </div>
 
           <p className="text-center text-sm text-gray-500 mt-4">
