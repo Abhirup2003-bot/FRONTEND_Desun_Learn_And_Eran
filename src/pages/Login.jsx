@@ -6,6 +6,8 @@ import { FaEnvelope, FaLock } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../features/authSlice/loginSlice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -13,10 +15,27 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [role, setRole] = useState("student"); // ✅ add this
-
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.login);
+
+  async function onClickHandler(e) {
+    e.preventDefault();
+    setError("");
+
+    const result = await dispatch(loginUser({ email, password }));
+
+    if (loginUser.fulfilled.match(result)) {
+      toast.success("Login Successfully");
+      navigate("/");
+    } else {
+      const errMsg = result.payload || "Login failed";
+
+      toast.error(errMsg);
+      setError(errMsg);
+    }
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -25,44 +44,6 @@ const Login = () => {
     if (name === "password") setPassword(value);
   };
 
-  async function onClickHandler(e) {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-
-    try {
-      const response = await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn/logInUser",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password, role }),
-          credentials: "include",
-        },
-      );
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data?.message || "Login failed");
-      }
-
-      toast.success("Login Successfully");
-      navigate("/");
-    } catch (err) {
-      console.error("Login error:", err); // ✅ fixed
-
-      if (err.message === "Failed to fetch") {
-        toast.error("Server not reachable (backend down)");
-      } else {
-        toast.error(err.message);
-      }
-
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  }
   return (
     <>
       <div className="min-h-screen flex flex-col lg:flex-row">
@@ -129,31 +110,6 @@ const Login = () => {
               </p>
             </div>
 
-            {/* ROLE TOGGLE */}
-            <div className="flex bg-gray-100 rounded-full p-1 mb-5">
-              <button
-                onClick={() => setRole("student")}
-                className={`flex-1 py-2 text-sm font-medium rounded-full transition ${
-                  role === "student"
-                    ? "bg-[#82c600] text-white shadow"
-                    : "text-gray-600"
-                }`}
-              >
-                Student
-              </button>
-
-              <button
-                onClick={() => setRole("admin")}
-                className={`flex-1 py-2 text-sm font-medium rounded-full transition ${
-                  role === "admin"
-                    ? "bg-[#82c600] text-white shadow"
-                    : "text-gray-600"
-                }`}
-              >
-                Admin
-              </button>
-            </div>
-
             {/* FORM */}
             <div className="flex flex-col gap-5">
               <InputField
@@ -188,8 +144,9 @@ const Login = () => {
 
               <Button
                 onClick={onClickHandler}
-                text={`Login as ${role}`}
+                text={loading ? "Logging in..." : "Login"}
                 variant="success"
+                disabled={loading}
               />
             </div>
 

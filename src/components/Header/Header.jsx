@@ -1,16 +1,22 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import Desunlogo from "../../assets/Desun Logo_.png";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../index";
+import { useSelector, useDispatch } from "react-redux";
+import { logout } from "../../features/authSlice/loginSlice";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // ✅ NEW
 
   const location = useLocation();
   const currentPath = location.pathname;
   const navigate = useNavigate();
+
+  const dispatch = useDispatch();
+
+  // ✅ GET LOGIN STATE FROM REDUX
+  const { isLoggedIn } = useSelector((state) => state.login);
 
   const linkClass =
     "px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-[#82C600] hover:text-white transition";
@@ -20,32 +26,7 @@ const Header = () => {
   const isLoginPage = currentPath === "/login";
   const isSignupPage = currentPath === "/signup";
 
-  // // ✅ CHECK LOGIN USING FETCH (cookie-based)
-  // useEffect(() => {
-  //   const checkAuth = async () => {
-  //     try {
-  //       const res = await fetch(
-  //         "https://backend-three-tau-88.vercel.app/app/v1/Learn/me",
-  //         {
-  //           method: "GET",
-  //           credentials: "include", // 🔥 IMPORTANT
-  //         },
-  //       );
-
-  //       if (res.ok) {
-  //         setIsLoggedIn(true);
-  //       } else {
-  //         setIsLoggedIn(false);
-  //       }
-  //     } catch (err) {
-  //       setIsLoggedIn(false);
-  //     }
-  //   };
-
-  //   checkAuth();
-  // }, [location]);
-
-  // ✅ LOGOUT USING FETCH
+  // ✅ LOGOUT
   const handleLogout = async () => {
     try {
       await fetch(
@@ -56,7 +37,7 @@ const Header = () => {
         },
       );
 
-      setIsLoggedIn(false);
+      dispatch(logout()); // ✅ update redux
       navigate("/login");
     } catch (err) {
       console.error("Logout error:", err);
@@ -116,13 +97,13 @@ const Header = () => {
             onChange={(e) => setSearch(e.target.value)}
             className="w-full px-3 py-2 text-xs sm:text-sm border rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#82C600]"
           />
-          <button className="px-3 py-2 bg-[#82C600] text-white text-xs sm:text-sm rounded-r-md hover:bg-[#6ea800] transition">
+          <button className="px-3 py-2.5 bg-[#82C600] text-white text-xs sm:text-sm rounded-r-md hover:bg-[#6ea800] transition">
             Search
           </button>
         </div>
 
-        {/* ✅ Desktop Buttons FIXED */}
-        <div className="hidden md:flex items-center gap-2 lg:gap-3 flex-shrink-0">
+        {/* ✅ Desktop Buttons (Redux Controlled) */}
+        <div className="hidden md:flex items-center gap-2 lg:gap-3 shrink-0">
           {isLoggedIn ? (
             <Button text="Logout" variant="danger" onClick={handleLogout} />
           ) : (
@@ -132,7 +113,6 @@ const Header = () => {
                   <Button text="Login" variant="success" />
                 </Link>
               )}
-
               {!isSignupPage && (
                 <Link to="/signup">
                   <Button text="Sign Up" variant="signup" />
@@ -187,7 +167,7 @@ const Header = () => {
               Contact
             </Link>
 
-            {/* ✅ Mobile Buttons FIXED */}
+            {/* ✅ Mobile Buttons */}
             <div className="flex flex-col gap-2 mt-2">
               {isLoggedIn ? (
                 <Button text="Logout" variant="danger" onClick={handleLogout} />
@@ -198,7 +178,7 @@ const Header = () => {
                   </Link>
 
                   <Link to="/signup" onClick={() => setMenuOpen(false)}>
-                    <Button text="Sign Up" variant="success" />
+                    <Button text="Sign Up" variant="signup" />
                   </Link>
                 </>
               )}

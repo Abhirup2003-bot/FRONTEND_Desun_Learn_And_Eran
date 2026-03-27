@@ -8,6 +8,8 @@ import Desunlogo from "../assets/Desun Logo_.png";
 import { FaEnvelope, FaLock, FaUser, FaPhoneAlt } from "react-icons/fa";
 import { FaRegEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
+import { useDispatch, useSelector } from "react-redux";
+import { registerUser } from "../features/authSlice/signupSlice";
 
 const SignUpPage = () => {
   const navigate = useNavigate();
@@ -17,14 +19,16 @@ const SignUpPage = () => {
   const [password, setPassword] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+
+  const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.auth);
 
   const formData = { userName, email, password };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "userName") setuserName(value); 
+    if (name === "userName") setuserName(value);
     if (name === "email") setEmail(value);
     if (name === "phone") setphoneNumber(value);
     if (name === "password") setPassword(value);
@@ -33,43 +37,18 @@ const SignUpPage = () => {
   async function onClickHandler(e) {
     e.preventDefault();
     setError("");
-    setLoading(true);
 
-    try {
-      console.log("Sending request...");
+    const result = await dispatch(
+      registerUser({ userName, email, password, phoneNumber }),
+    );
 
-      const response = await fetch(//
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn/register",  
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ userName, email, password, phoneNumber }),
-          credentials: "include",
-        },
-      );
-
-      console.log("Response status:", response.status);
-
-      const data = await response.json().catch(() => ({}));
-
-      if (!response.ok) {
-        throw new Error(data?.message || "Signup failed");
-      }
-
+    if (registerUser.fulfilled.match(result)) {
       toast.success("User Registered Successfully");
       navigate("/");
-    } catch (err) {
-      console.error("Signup error:", err);
-
-      if (err.message === "Failed to fetch") {
-        toast.error("Server not reachable (backend down)");
-      } else {
-        toast.error(err.message);
-      }
-
-      setError(err.message);
-    } finally {
-      setLoading(false);
+    } else {
+      const errMsg = result.payload || "Signup failed";
+      toast.error(errMsg);
+      setError(errMsg);
     }
   }
 
