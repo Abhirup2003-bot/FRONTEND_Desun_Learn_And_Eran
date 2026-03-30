@@ -6,7 +6,7 @@ import desunLogo from "../assets/logo.png";
 import Desunlogo from "../assets/Desun Logo_.png";
 
 import { FaEnvelope, FaLock, FaUser, FaPhoneAlt } from "react-icons/fa";
-import { FaRegEyeSlash } from "react-icons/fa";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { registerUser } from "../features/authSlice/authSlice";
@@ -148,7 +148,8 @@ const SignUpPage = () => {
               value={password}
               onChange={handleChange}
               icon={FaLock}
-              iconEye={FaRegEyeSlash}
+              eyeOpen={FaEye}
+              eyeClose={FaEyeSlash}
             />
 
             <Button
@@ -159,7 +160,7 @@ const SignUpPage = () => {
           </div>
 
           <p className="text-center text-sm text-gray-500 mt-4">
-            Need access?{" "}
+            Already have an Account?{" "}
             <Link
               to="/login"
               className="text-green-600 cursor-pointer hover:underline"

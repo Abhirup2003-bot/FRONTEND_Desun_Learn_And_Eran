@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { InputField, Button } from "../components";
 import desunLogo from "../assets/logo.png";
 import { FaEnvelope, FaLock } from "react-icons/fa";
-import { FaRegEyeSlash } from "react-icons/fa";
+import { FaEyeSlash, FaEye } from "react-icons/fa";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
@@ -126,9 +126,10 @@ const Login = () => {
                 type="password"
                 name="password"
                 value={password}
-                onChange={handleChange}
+                onChange={(e) => setPassword(e.target.value)}
                 icon={FaLock}
-                iconEye={FaRegEyeSlash}
+                eyeOpen={FaEye} 
+                eyeClose={FaEyeSlash} 
               />
 
               <div className="flex items-center justify-between text-sm">

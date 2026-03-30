@@ -1,191 +1,229 @@
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Desunlogo from "../../assets/Desun Logo_.png";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../index";
 import { useSelector, useDispatch } from "react-redux";
-import { logout } from "../../features/authSlice/authSlice";
+import { logoutUser } from "../../features/authSlice/authSlice";
+import {
+  FaUserCircle,
+  FaSignOutAlt,
+  FaUser,
+  FaBars,
+  FaTimes,
+  FaSearch,
+} from "react-icons/fa";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [search, setSearch] = useState("");
+  const [profileOpen, setProfileOpen] = useState(false);
+  const [searchActive, setSearchActive] = useState(false);
+
+  const profileRef = useRef();
 
   const location = useLocation();
-  const currentPath = location.pathname;
   const navigate = useNavigate();
-
   const dispatch = useDispatch();
 
-  // ✅ GET LOGIN STATE FROM REDUX
-  const { isLoggedIn } = useSelector((state) => state.auth);
+  const { isLoggedIn, user } = useSelector((state) => state.auth);
 
   const linkClass =
-    "px-3 lg:px-4 py-2 rounded-md text-xs sm:text-sm font-medium text-gray-700 hover:bg-[#82C600] hover:text-white transition";
+    "px-4 py-2 rounded-lg text-sm font-medium text-gray-700 hover:bg-[#82C600] hover:text-white transition";
 
   const activeClass = "bg-[#82C600] text-white";
 
-  const isLoginPage = currentPath === "/login";
-  const isSignupPage = currentPath === "/signup";
+  // Close profile dropdown
+  useEffect(() => {
+    const handler = (e) => {
+      if (profileRef.current && !profileRef.current.contains(e.target)) {
+        setProfileOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
+  }, []);
 
-  // ✅ LOGOUT
-  const handleLogout = async () => {
-    try {
-      await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn/logOutUse",
-        {
-          method: "POST",
-          credentials: "include",
-        },
-      );
+  const handleLogout = () => {
+    dispatch(logoutUser()).then(() => navigate("/login"));
+  };
 
-      dispatch(logout()); // ✅ update redux
-      navigate("/login");
-    } catch (err) {
-      console.error("Logout error:", err);
-    }
+  const handleSearch = () => {
+    console.log("Searching:", search);
   };
 
   return (
-    <header className="w-full shadow-sm bg-white sticky top-0 z-50">
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-3 sm:px-6 py-3 gap-2">
-        {/* Logo */}
-        <div className="flex items-center gap-2 flex-shrink-0">
-          <div className="w-32 sm:w-40 md:w-48 lg:w-56">
-            <img
-              src={Desunlogo}
-              alt="logo"
-              className="w-full h-auto object-contain"
-            />
-          </div>
+    <header className="w-full backdrop-blur-md bg-white/80 border-b sticky top-0 z-50">
+      {/* MAIN HEADER */}
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
+        {/* LEFT */}
+        <div className="flex items-center gap-3">
+          <Link to="/" className="w-28 sm:w-32 md:w-46">
+            <img src={Desunlogo} alt="logo" />
+          </Link>
         </div>
 
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-3 lg:gap-6">
-          <NavLink
-            to="/"
-            className={({ isActive }) =>
-              isActive ? `${linkClass} ${activeClass}` : linkClass
-            }
-          >
-            Home
-          </NavLink>
-
-          <NavLink
-            to="/about"
-            className={({ isActive }) =>
-              isActive ? `${linkClass} ${activeClass}` : linkClass
-            }
-          >
-            Contests
-          </NavLink>
-
-          <NavLink
-            to="/contact"
-            className={({ isActive }) =>
-              isActive ? `${linkClass} ${activeClass}` : linkClass
-            }
-          >
-            Contact
-          </NavLink>
+        {/* CENTER NAV */}
+        <nav className="hidden md:flex gap-3">
+          {["/", "/contest", "/contact"].map((path, i) => {
+            const labels = ["Home", "Contests", "Contact"];
+            return (
+              <NavLink
+                key={i}
+                to={path}
+                className={({ isActive }) =>
+                  isActive ? `${linkClass} ${activeClass}` : linkClass
+                }
+              >
+                {labels[i]}
+              </NavLink>
+            );
+          })}
         </nav>
 
-        {/* Search */}
-        <div className="hidden md:flex items-center flex-1 max-w-xs lg:max-w-sm mx-2">
+        {/* SEARCH */}
+        <div
+          className={`hidden md:flex items-center bg-gray-100 rounded-full px-3 py-1 transition-all duration-300 ${
+            searchActive ? "w-64" : "w-36"
+          }`}
+        >
           <input
             type="text"
-            placeholder="Search..."
+            placeholder="Search"
+            className="bg-transparent outline-none text-sm w-full"
             value={search}
+            onFocus={() => setSearchActive(true)}
+            onBlur={() => setSearchActive(false)}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-3 py-2 text-xs sm:text-sm border rounded-l-md focus:outline-none focus:ring-2 focus:ring-[#82C600]"
           />
-          <button className="px-3 py-2.5 bg-[#82C600] text-white text-xs sm:text-sm rounded-r-md hover:bg-[#6ea800] transition">
-            Search
-          </button>
-        </div>
 
-        {/* ✅ Desktop Buttons (Redux Controlled) */}
-        <div className="hidden md:flex items-center gap-2 lg:gap-3 shrink-0">
-          {isLoggedIn ? (
-            <Button text="Logout" variant="danger" onClick={handleLogout} />
-          ) : (
-            <>
-              {!isLoginPage && (
-                <Link to="/login">
-                  <Button text="Login" variant="success" />
-                </Link>
-              )}
-              {!isSignupPage && (
-                <Link to="/signup">
-                  <Button text="Sign Up" variant="signup" />
-                </Link>
-              )}
-            </>
+          {searchActive && (
+            <button onClick={handleSearch} className="text-gray-600">
+              <FaSearch />
+            </button>
           )}
         </div>
 
-        {/* Hamburger */}
-        <button
-          className="md:hidden flex flex-col gap-1 ml-2"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          <span className="w-6 h-0.5 bg-gray-800"></span>
-          <span className="w-6 h-0.5 bg-gray-800"></span>
-          <span className="w-6 h-0.5 bg-gray-800"></span>
-        </button>
+        {/* RIGHT */}
+        <div className="flex items-center gap-3">
+          {/* Desktop */}
+          <div className="hidden md:flex items-center gap-3">
+            {isLoggedIn ? (
+              <div className="flex items-center gap-3">
+                {/* USER INFO */}
+                <div className="hidden sm:flex flex-col text-right">
+                  <span className="text-sm font-semibold text-gray-700">
+                    Hello, {user?.userName || "User"}
+                  </span>
+                  <span className="text-xs text-gray-500 truncate max-w-[150px]">
+                    {user?.email}
+                  </span>
+                </div>
+
+                {/* PROFILE */}
+                <div className="relative" ref={profileRef}>
+                  <FaUserCircle
+                    onClick={() => setProfileOpen(!profileOpen)}
+                    className="text-3xl cursor-pointer text-gray-700 hover:text-[#82C600]"
+                  />
+
+                  {profileOpen && (
+                    <div className="absolute right-0 mt-3 w-52 bg-white rounded-xl shadow-xl border p-2">
+                      <Link
+                        to="/profile"
+                        className="flex items-center gap-2 px-3 py-2 hover:bg-gray-100 rounded-lg"
+                      >
+                        <FaUser /> Profile
+                      </Link>
+
+                      <Button
+                        text="Logout"
+                        variant="logout"
+                        onClick={handleLogout}
+                        icon={<FaSignOutAlt />}
+                      />
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <>
+                <Link to="/login">
+                  <Button text="Login" variant="outline" />
+                </Link>
+                <Link to="/signup">
+                  <Button text="Sign Up" variant="gradient" />
+                </Link>
+              </>
+            )}
+          </div>
+
+          {/* Mobile Hamburger */}
+          <button
+            className="md:hidden text-xl"
+            onClick={() => setMenuOpen(!menuOpen)}
+          >
+            {menuOpen ? <FaTimes /> : <FaBars />}
+          </button>
+        </div>
       </div>
 
-      {/* Mobile */}
-      {menuOpen && (
-        <div className="md:hidden bg-white border-t shadow-sm">
-          <div className="flex flex-col gap-4 py-4 px-4">
+      {/* 🔥 MOBILE MENU */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-500 ease-in-out ${
+          menuOpen ? "max-h-[500px]" : "max-h-0"
+        } bg-white border-t`}
+      >
+        <div className="flex flex-col p-4 gap-3">
+          {/* USER INFO */}
+          {isLoggedIn && (
+            <div className="border-b pb-3 mb-3">
+              <p className="text-sm font-semibold text-gray-700">
+                Hello, {user?.userName || "User"}
+              </p>
+              <p className="text-xs text-gray-500">{user?.email}</p>
+            </div>
+          )}
+
+          <NavLink to="/" onClick={() => setMenuOpen(false)}>
+            Home
+          </NavLink>
+          <NavLink to="/contest" onClick={() => setMenuOpen(false)}>
+            Contests
+          </NavLink>
+          <NavLink to="/contact" onClick={() => setMenuOpen(false)}>
+            Contact
+          </NavLink>
+
+          {/* SEARCH */}
+          <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mt-3">
             <input
               type="text"
-              placeholder="Search..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full px-3 py-2 text-sm border rounded-md"
+              placeholder="Search"
+              className="bg-transparent outline-none w-full text-sm"
             />
-
-            <Link
-              to="/"
-              onClick={() => setMenuOpen(false)}
-              className={linkClass}
-            >
-              Home
-            </Link>
-            <Link
-              to="/about"
-              onClick={() => setMenuOpen(false)}
-              className={linkClass}
-            >
-              Contests
-            </Link>
-            <Link
-              to="/contact"
-              onClick={() => setMenuOpen(false)}
-              className={linkClass}
-            >
-              Contact
-            </Link>
-
-            {/* ✅ Mobile Buttons */}
-            <div className="flex flex-col gap-2 mt-2">
-              {isLoggedIn ? (
-                <Button text="Logout" variant="danger" onClick={handleLogout} />
-              ) : (
-                <>
-                  <Link to="/login" onClick={() => setMenuOpen(false)}>
-                    <Button text="Login" variant="success" />
-                  </Link>
-
-                  <Link to="/signup" onClick={() => setMenuOpen(false)}>
-                    <Button text="Sign Up" variant="signup" />
-                  </Link>
-                </>
-              )}
-            </div>
+            <FaSearch />
           </div>
+
+          {/* USER ACTION */}
+          {isLoggedIn ? (
+            <Button
+              text="Logout"
+              variant="danger"
+              onClick={handleLogout}
+              icon={<FaSignOutAlt />}
+            />
+          ) : (
+            <>
+              <Link to="/login">
+                <Button text="Login" variant="outline" />
+              </Link>
+              <Link to="/signup">
+                <Button text="Sign Up" variant="gradient" />
+              </Link>
+            </>
+          )}
         </div>
-      )}
+      </div>
     </header>
   );
 };

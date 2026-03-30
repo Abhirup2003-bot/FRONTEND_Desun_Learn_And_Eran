@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// LOGIN
+// ================= LOGIN =================
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
@@ -28,7 +28,7 @@ export const loginUser = createAsyncThunk(
   },
 );
 
-// REGISTER
+// ================= REGISTER =================
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async ({ userName, email, password, phoneNumber }, { rejectWithValue }) => {
@@ -56,6 +56,33 @@ export const registerUser = createAsyncThunk(
   },
 );
 
+// ================= LOGOUT =================
+export const logoutUser = createAsyncThunk(
+  "auth/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await fetch(
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn/logOutUser",
+        {
+          method: "POST",
+          credentials: "include",
+        },
+      );
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        return rejectWithValue(data?.msg || "Logout failed");
+      }
+
+      return true;
+    } catch {
+      return rejectWithValue("Server not reachable");
+    }
+  },
+);
+
+// ================= SLICE =================
 const authSlice = createSlice({
   name: "auth",
   initialState: {
@@ -72,24 +99,62 @@ const authSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      // LOGIN
+      // ================= LOGIN =================
       .addCase(loginUser.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         state.isLoggedIn = true;
-        state.user = action.payload.user;
+
+        // 🔥 FIX: handle all backend response formats
+        const userData =
+          action.payload?.data || action.payload?.user || action.payload;
+
+        state.user = userData;
+
+        // console.log("LOGIN USER:", userData);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
 
-      // SIGNUP
+      // ================= REGISTER =================
+      .addCase(registerUser.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
       .addCase(registerUser.fulfilled, (state, action) => {
+        state.loading = false;
         state.isLoggedIn = true;
-        state.user = action.payload.user;
+
+        // 🔥 FIX: handle all backend response formats
+        const userData =
+          action.payload?.data || action.payload?.user || action.payload;
+
+        state.user = userData;
+
+        // console.log("REGISTER USER:", userData);
+      })
+      .addCase(registerUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+
+      // ================= LOGOUT =================
+      .addCase(logoutUser.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(logoutUser.fulfilled, (state) => {
+        state.loading = false;
+        state.isLoggedIn = false;
+        state.user = null;
+      })
+      .addCase(logoutUser.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
