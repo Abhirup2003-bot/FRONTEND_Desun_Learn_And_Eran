@@ -21,7 +21,6 @@ const Header = () => {
 
   const profileRef = useRef();
 
-  const location = useLocation();
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
