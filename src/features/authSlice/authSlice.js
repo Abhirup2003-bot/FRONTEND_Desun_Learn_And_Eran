@@ -129,6 +129,8 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
         state.isLoggedIn = true;
+        state.isLoggedIn = false;
+        state.user = null;
 
         // 🔥 FIX: handle all backend response formats
         const userData =

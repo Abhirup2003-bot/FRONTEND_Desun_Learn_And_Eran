@@ -4,17 +4,32 @@ import Home from "./pages/Home";
 import Login from "./pages/Login";
 import SignUpPage from "./pages/SignUpPage";
 import Contest from "./pages/ContestPage";
+import AdminDashboard from "./pages/AdminDashboard"; // create this
+
+import ProtectedRoute from "./routes/ProtectedRoute";
+import AdminRoute from "./routes/AdminRoute";
 
 function App() {
   return (
     <Routes>
-      <Route element={<Layout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/contest" element={<Contest />} />
-      </Route>
-
+      {/* PUBLIC ROUTES */}
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUpPage />} />
+
+      {/* USER PROTECTED ROUTES */}
+      <Route element={<ProtectedRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/contest" element={<Contest />} />
+        </Route>
+      </Route>
+
+      {/* ADMIN ROUTES */}
+      <Route element={<AdminRoute />}>
+        <Route element={<Layout />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        </Route>
+      </Route>
     </Routes>
   );
 }

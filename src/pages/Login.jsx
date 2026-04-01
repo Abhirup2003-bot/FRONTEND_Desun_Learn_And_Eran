@@ -28,7 +28,11 @@ const Login = () => {
 
     if (loginUser.fulfilled.match(result)) {
       toast.success("Login Successfully");
-      navigate("/");
+      if (result.payload.role === "admin") {
+        navigate("/admin/dashboard");
+      } else {
+        navigate("/");
+      }
     } else {
       const errMsg = result.payload || "Login failed";
 
@@ -128,8 +132,8 @@ const Login = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 icon={FaLock}
-                eyeOpen={FaEye} 
-                eyeClose={FaEyeSlash} 
+                eyeOpen={FaEye}
+                eyeClose={FaEyeSlash}
               />
 
               <div className="flex items-center justify-between text-sm">
