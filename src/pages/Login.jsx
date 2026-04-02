@@ -27,15 +27,18 @@ const Login = () => {
     const result = await dispatch(loginUser({ email, password }));
 
     if (loginUser.fulfilled.match(result)) {
-      toast.success("Login Successfully");
-      if (result.payload.role === "admin") {
+      const role = result.payload.role;
+
+      // 🔥 CUSTOM ROLE-BASED TOAST
+      if (role === "admin") {
+        toast.success("👑 Welcome Admin! Login Successful");
         navigate("/admin/dashboard");
       } else {
+        toast.success("🎓 Welcome Student! Login Successful");
         navigate("/");
       }
     } else {
       const errMsg = result.payload || "Login failed";
-
       toast.error(errMsg);
       setError(errMsg);
     }
