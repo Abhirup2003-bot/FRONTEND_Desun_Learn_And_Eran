@@ -8,7 +8,7 @@ const Home = () => {
   const contests = [
     {
       id: 1,
-      title: "Neo-Vanguard Brand Identity",
+      title: "Mern Stack Contest",
       prize: 8500,
       time: "4 Days",
       level: "ACTIVE",
@@ -18,7 +18,7 @@ const Home = () => {
     },
     {
       id: 2,
-      title: "Eco-Flow Mobile Experience",
+      title: "UI & UX Contest",
       prize: 12000,
       time: "12 Hours",
       level: "ACTIVE",
@@ -28,10 +28,10 @@ const Home = () => {
     },
     {
       id: 3,
-      title: "Urban Habitat 2050 Vision",
+      title: "Digital Marketing Contest",
       prize: 45000,
       time: "9 Days",
-      level: "HOT",
+      level: "ONGOING",
       tag: "3D RENDER",
       host: "ArchDaily",
       image: "https://images.unsplash.com/photo-1527430253228-e93688616381",
@@ -73,7 +73,7 @@ const Home = () => {
                   key={contest.id}
                   className="bg-white/10 backdrop-blur-md p-1 rounded-2xl"
                 >
-                  <ContestCard contest={contest} />
+                  <ContestCard contest={contest} onClick={handleExplore} />
                 </div>
               ))}
             </div>

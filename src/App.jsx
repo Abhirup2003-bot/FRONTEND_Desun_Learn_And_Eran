@@ -13,22 +13,19 @@ function App() {
   return (
     <Routes>
       {/* PUBLIC ROUTES */}
+      <Route element={<Layout />}>
+        <Route path="/" element={<Home />} />
+        <Route path="/contest" element={<Contest />} />
+      </Route>
       <Route path="/login" element={<Login />} />
       <Route path="/signup" element={<SignUpPage />} />
 
       {/* USER PROTECTED ROUTES */}
-      <Route element={<ProtectedRoute />}>
-        <Route element={<Layout />}>
-          <Route path="/" element={<Home />} />
-          <Route path="/contest" element={<Contest />} />
-        </Route>
-      </Route>
+      <Route element={<ProtectedRoute />}></Route>
 
       {/* ADMIN ROUTES */}
       <Route element={<AdminRoute />}>
-        <Route element={<Layout />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
-        </Route>
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
       </Route>
     </Routes>
   );

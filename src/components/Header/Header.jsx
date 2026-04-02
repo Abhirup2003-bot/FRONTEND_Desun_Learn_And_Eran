@@ -3,7 +3,7 @@ import Desunlogo from "../../assets/Desun Logo_.png";
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { Button } from "../index";
 import { useSelector, useDispatch } from "react-redux";
-import { logoutUser, logout } from "../../features/authSlice/authSlice";
+import { logoutUser } from "../../features/authSlice/authSlice";
 import { persistor } from "../../app/store";
 import {
   FaUserCircle,
@@ -45,17 +45,14 @@ const Header = () => {
 
   const handleLogout = async () => {
     try {
-      await dispatch(logoutUser()); // API call (may fail)
+      dispatch(logoutUser()); // API call (may fail)
 
-      dispatch(logout()); // clear redux
       await persistor.purge(); // 🔥 clear localStorage
 
       navigate("/login");
     } catch (err) {
       console.error("Logout error:", err);
 
-      // 🔥 fallback logout (even if API fails)
-      dispatch(logout());
       await persistor.purge();
       navigate("/login");
     }

@@ -91,12 +91,7 @@ const authSlice = createSlice({
     loading: false,
     error: null,
   },
-  reducers: {
-    logout: (state) => {
-      state.isLoggedIn = false;
-      state.user = null;
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       // ================= LOGIN =================
@@ -157,9 +152,9 @@ const authSlice = createSlice({
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
+        console.error(`This is coming from auth Logout Feature`);
       });
   },
 });
 
-export const { logout } = authSlice.actions;
 export default authSlice.reducer;

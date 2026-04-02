@@ -1,6 +1,11 @@
 import React from "react";
+import { useNavigate } from "react-router-dom";
 
-const ContestCard = ({ contest }) => {
+const ContestCard = ({ contest, onClick }) => {
+  const navigate = useNavigate();
+  const handleExplore = () => {
+    navigate("/contest");
+  };
   return (
     <div className="bg-[#f5f3ff] rounded-2xl p-3 shadow-sm hover:shadow-md transition duration-300">
       {/* Image Section */}
@@ -50,7 +55,10 @@ const ContestCard = ({ contest }) => {
       </div>
 
       {/* Button */}
-      <button className="w-full bg-indigo-100 text-indigo-700 py-2 rounded-lg text-sm font-medium hover:bg-indigo-200 transition flex items-center justify-center gap-2">
+      <button
+        onClick={handleExplore}
+        className="w-full bg-indigo-100 text-indigo-700 py-2 rounded-lg text-sm font-medium hover:bg-indigo-200 transition flex items-center justify-center gap-2"
+      >
         View Details →
       </button>
     </div>
