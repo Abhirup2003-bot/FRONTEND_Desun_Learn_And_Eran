@@ -1,6 +1,13 @@
 import React, { useState } from "react";
+import { useSelector } from "react-redux"; // 1. Import useSelector
 
 const AdminContestPage = () => {
+  // 2. Access the user object from the auth slice
+  const authState = useSelector((state) => state.auth);
+  console.log("FULL AUTH STATE:", authState);
+
+  const token = authState.user?.token || authState.token;
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -12,26 +19,24 @@ const AdminContestPage = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
 
-  // INPUT CHANGE
   const handleChange = (e) => {
     const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // SUBMIT
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    // DEBUG
+    console.log("TOKEN FROM REDUX 👉", token);
+
+    if (!token) {
+      setMessage("❌ Error: Authorization token missing. Please log in.");
+      return;
+    }
+
     setLoading(true);
     setMessage("");
-
-    const token = localStorage.getItem("token");
-
-    console.log("TOKEN 👉", token); // DEBUG
 
     try {
       const res = await fetch(
@@ -40,7 +45,7 @@ const AdminContestPage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${token}`, // Use the Redux token here
           },
           body: JSON.stringify(formData),
         },
@@ -53,8 +58,6 @@ const AdminContestPage = () => {
       }
 
       setMessage("✅ Contest created successfully!");
-
-      // RESET FORM
       setFormData({
         title: "",
         description: "",

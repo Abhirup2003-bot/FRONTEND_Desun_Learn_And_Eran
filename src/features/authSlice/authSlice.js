@@ -88,6 +88,7 @@ const authSlice = createSlice({
   initialState: {
     isLoggedIn: false,
     user: null,
+    token: null,
     loading: false,
     error: null,
   },
@@ -100,8 +101,11 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
+        console.log("FULL PAYLOAD FROM BACKEND:", action.payload);
         state.loading = false;
         state.isLoggedIn = true;
+        state.user = action.payload.user;
+        state.token = action.payload.accessToken;
 
         // 🔥 FIX: handle all backend response formats
         const userData =
