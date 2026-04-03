@@ -8,9 +8,11 @@ import AdminDashboard from "./pages/AdminDashboard";
 
 import ProtectedRoute from "./routes/ProtectedRoute";
 import AdminRoute from "./routes/AdminRoute";
+import AdminLayout from "./components/AdminLayout";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import AdminContestPage from "./pages/AdminContestPage";
 
 function App() {
   return (
@@ -33,7 +35,11 @@ function App() {
 
         {/* ✅ ADMIN ROUTES */}
         <Route element={<AdminRoute />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route path="/admin" element={<AdminLayout />}>
+            <Route path="dashboard" element={<AdminDashboard />} />
+
+            <Route path="contest" element={<AdminContestPage />} />
+          </Route>
         </Route>
       </Routes>
 

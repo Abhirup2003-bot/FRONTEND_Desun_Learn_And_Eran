@@ -1,5 +1,6 @@
 import { configureStore } from "@reduxjs/toolkit";
 import authReducer from "../features/authSlice/authSlice";
+import contestReducer from "../features/contestSlice/contestSlice";
 
 import {
   persistStore,
@@ -35,6 +36,7 @@ const persistedReducer = persistReducer(persistConfig, authReducer);
 export const store = configureStore({
   reducer: {
     auth: persistedReducer,
+    constest: contestReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
