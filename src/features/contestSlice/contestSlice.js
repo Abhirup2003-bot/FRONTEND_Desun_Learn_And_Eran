@@ -4,6 +4,7 @@ export const createContest = createAsyncThunk(
   "contest/createContest",
   async (contestData, { rejectWithValue }) => {
     try {
+      console.log("Sending contestData:", contestData);
       const token = getState().auth.token;
 
       console.log("Token:", token);
