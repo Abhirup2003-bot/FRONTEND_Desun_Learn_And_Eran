@@ -118,7 +118,7 @@ function Sidebar({ open, setOpen }) {
               {/* User Info */}
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white">
-                  {user?.name?.charAt(0) || "A"}
+                  {user?.userName?.charAt(0).toUpperCase() || "A"}
                 </div>
 
                 {!collapsed && (

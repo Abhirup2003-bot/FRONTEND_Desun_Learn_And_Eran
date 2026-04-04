@@ -15,7 +15,6 @@ import {
 
 import createWebStorage from "redux-persist/es/storage/createWebStorage";
 
-// ✅ FIXED STORAGE
 const storage =
   typeof window !== "undefined"
     ? createWebStorage("local")
@@ -36,7 +35,7 @@ const persistedReducer = persistReducer(persistConfig, authReducer);
 export const store = configureStore({
   reducer: {
     auth: persistedReducer,
-    constest: contestReducer,
+    contest: contestReducer, 
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

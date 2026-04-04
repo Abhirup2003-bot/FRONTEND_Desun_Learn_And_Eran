@@ -4,7 +4,6 @@ import { useSelector } from "react-redux"; // 1. Import useSelector
 const AdminContestPage = () => {
   // 2. Access the user object from the auth slice
   const authState = useSelector((state) => state.auth);
-  console.log("FULL AUTH STATE:", authState);
 
   const token = authState.user?.token || authState.token;
 
@@ -28,8 +27,7 @@ const AdminContestPage = () => {
     e.preventDefault();
 
     // DEBUG
-    console.log("TOKEN FROM REDUX 👉", token);
-
+    
     if (!token) {
       setMessage("❌ Error: Authorization token missing. Please log in.");
       return;

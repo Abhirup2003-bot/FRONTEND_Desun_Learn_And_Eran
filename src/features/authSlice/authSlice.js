@@ -82,6 +82,33 @@ export const logoutUser = createAsyncThunk(
   },
 );
 
+// ================= FORGOT PASSWORD =================
+export const forgetPassword = createAsyncThunk(
+  "auth/forgotPassword",
+  async ({ email }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn/forget-password",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        },
+      );
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        return rejectWithValue(data?.msg || "Failed to send reset email");
+      }
+
+      return data;
+    } catch (error) {
+      return rejectWithValue("Server not reachable");
+    }
+  },
+);
+
 // ================= SLICE =================
 const authSlice = createSlice({
   name: "auth",
@@ -101,7 +128,7 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        console.log("FULL PAYLOAD FROM BACKEND:", action.payload);
+        // console.log("FULL PAYLOAD FROM BACKEND:", action.payload);
         state.loading = false;
         state.isLoggedIn = true;
         state.user = action.payload.user;
@@ -157,6 +184,16 @@ const authSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
         console.error(`This is coming from auth Logout Feature`);
+      })
+      .addCase(forgetPassword.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(forgetPassword.fulfilled, (state) => {
+        state.loading = false;
+      })
+      .addCase(forgetPassword.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });

@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../features/authSlice/authSlice";
+import { forgetPassword } from "../features/authSlice/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -49,6 +50,20 @@ const Login = () => {
 
     if (name === "email") setEmail(value);
     if (name === "password") setPassword(value);
+  };
+  const handleForgetPassword = async () => {
+    if (!email) {
+      toast.error("Please enter your email first");
+      return;
+    }
+
+    const result = await dispatch(forgetPassword({ email }));
+
+    if (forgetPassword.fulfilled.match(result)) {
+      toast.success("📩 Reset link sent to your email");
+    } else {
+      toast.error(result.payload || "Something went wrong");
+    }
   };
 
   return (
@@ -145,7 +160,10 @@ const Login = () => {
                   Remember me
                 </label>
 
-                <span className="text-[#82c600] cursor-pointer hover:underline">
+                <span
+                  onClick={handleForgetPassword}
+                  className="text-[#82c600] cursor-pointer hover:underline"
+                >
                   Forgot password?
                 </span>
               </div>

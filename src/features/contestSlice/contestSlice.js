@@ -1,37 +1,34 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-export const createContest = createAsyncThunk(
-  "contest/createContest",
-  async (contestData, { rejectWithValue }) => {
+export const getContest = createAsyncThunk(
+  "contest/getContest",
+  async (_, { rejectWithValue }) => {
     try {
-      console.log("Sending contestData:", contestData);
-      const token = getState().auth.token;
-
-      console.log("Token:", token);
       const res = await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Admin/create-contest",
+        "https://backend-three-tau-88.vercel.app/app/v1/Learn/get-all-contest",
         {
-          method: "POST",
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({
-            title: contestData.title,
-            description: contestData.description,
-            brief: contestData.brief,
-            deadline: contestData.deadline,
-            type: contestData.type,
-          }),
         },
       );
 
+      // 1. Check if the response is actually JSON
+      const contentType = res.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        // If it's not JSON, get the text to see the HTML error
+        const text = await res.text();
+        console.error("Server returned non-JSON response:", text);
+        return rejectWithValue(
+          "Server error: Received HTML instead of JSON. Check URL or Backend logs.",
+        );
+      }
+
       const data = await res.json();
-      console.log("Sending data:", contestData);
-      console.log("Backend response:", data);
 
       if (!res.ok) {
-        return rejectWithValue(data.msg);
+        return rejectWithValue(data?.msg || "Failed to fetch contests");
       }
 
       return data;
@@ -51,14 +48,16 @@ const contestSlice = createSlice({
   reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createContest.pending, (state) => {
+      .addCase(getContest.pending, (state) => {
         state.loading = true;
       })
-      .addCase(createContest.fulfilled, (state, action) => {
+      .addCase(getContest.fulfilled, (state, action) => {
         state.loading = false;
-        state.contests.push(action.payload);
+
+        // 🔥 Handle both possible API formats
+        state.contests = action.payload.data || [];
       })
-      .addCase(createContest.rejected, (state, action) => {
+      .addCase(getContest.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });
