@@ -14,24 +14,23 @@ export const getContest = createAsyncThunk(
         },
       );
 
-      // 1. Check if the response is actually JSON
       const contentType = res.headers.get("content-type");
+
       if (!contentType || !contentType.includes("application/json")) {
-        // If it's not JSON, get the text to see the HTML error
         const text = await res.text();
         console.error("Server returned non-JSON response:", text);
-        return rejectWithValue(
-          "Server error: Received HTML instead of JSON. Check URL or Backend logs.",
-        );
+        return rejectWithValue("Server error: Received HTML instead of JSON");
       }
 
       const data = await res.json();
+
+      console.log("API RESPONSE 👉", data);
 
       if (!res.ok) {
         return rejectWithValue(data?.msg || "Failed to fetch contests");
       }
 
-      return data;
+      return data.data; // ✅ IMPORTANT
     } catch (error) {
       return rejectWithValue(error.message);
     }
@@ -41,7 +40,7 @@ export const getContest = createAsyncThunk(
 const contestSlice = createSlice({
   name: "contest",
   initialState: {
-    contests: [],
+    contests: [], // ✅ consistent naming
     loading: false,
     error: null,
   },
@@ -53,9 +52,7 @@ const contestSlice = createSlice({
       })
       .addCase(getContest.fulfilled, (state, action) => {
         state.loading = false;
-
-        // 🔥 Handle both possible API formats
-        state.contests = action.payload.data || [];
+        state.contests = action.payload || []; // ✅ FIX
       })
       .addCase(getContest.rejected, (state, action) => {
         state.loading = false;

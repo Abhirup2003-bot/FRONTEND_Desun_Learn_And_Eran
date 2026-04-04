@@ -1,30 +1,43 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-const ContestCard = ({ contest, onClick }) => {
+const ContestCard = ({ contest }) => {
   const navigate = useNavigate();
+
   const handleExplore = () => {
-    navigate("/contest");
+    navigate("/contest", { state: contest });
   };
+
+  const getDaysLeft = () => {
+    if (!contest.deadline) return "No deadline";
+
+    const end = new Date(contest.deadline);
+    const now = new Date();
+    const diff = end - now;
+
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
+
+    if (days <= 0) return "Ended";
+    return `${days} Days`;
+  };
+
   return (
     <div className="bg-[#f5f3ff] rounded-2xl p-3 shadow-sm hover:shadow-md transition duration-300">
-      {/* Image Section */}
+      {/* Image */}
       <div className="relative rounded-xl overflow-hidden mb-4">
         <img
           src={contest.image || "https://via.placeholder.com/300"}
-          alt="contest"
+          alt={contest.title}
           className="w-full h-60 object-cover"
         />
 
-        {/* Badge */}
         <span className="absolute top-2 left-2 bg-purple-600 text-white text-[10px] px-2 py-1 rounded-full font-semibold">
-          {contest.level || "ACTIVE"}
+          {contest.type || "Contest"}
         </span>
 
-        {/* Tag */}
-        {contest.tag && (
+        {contest.brief && (
           <span className="absolute top-2 right-2 bg-white text-gray-700 text-[10px] px-2 py-1 rounded-full shadow">
-            {contest.tag}
+            {contest.brief}
           </span>
         )}
       </div>
@@ -34,30 +47,30 @@ const ContestCard = ({ contest, onClick }) => {
         {contest.title}
       </h2>
 
-      {/* Hosted By */}
-      <p className="text-xs text-gray-400 mb-3">
-        Hosted by {contest.host || "Unknown"}
+      {/* Description */}
+      <p className="text-xs text-gray-500 mb-3 line-clamp-2">
+        {contest.description}
       </p>
 
-      {/* Info Row */}
+      {/* Info */}
       <div className="flex justify-between items-center text-xs mb-4">
         <div>
-          <p className="text-gray-400">Prize Pool</p>
-          <p className="font-semibold text-indigo-600">${contest.prize}</p>
+          <p className="text-gray-400">Type</p>
+          <p className="font-semibold text-indigo-600">
+            {contest.type || "N/A"}
+          </p>
         </div>
 
         <div className="text-right">
           <p className="text-gray-400">Ends in</p>
-          <p className="font-semibold text-gray-700">
-            {contest.time || "5 Days"}
-          </p>
+          <p className="font-semibold text-gray-700">{getDaysLeft()}</p>
         </div>
       </div>
 
       {/* Button */}
       <button
         onClick={handleExplore}
-        className="w-full bg-indigo-100 text-indigo-700 py-2 rounded-lg text-sm font-medium hover:bg-indigo-200 transition flex items-center justify-center gap-2"
+        className="w-full bg-indigo-100 text-indigo-700 py-2 rounded-lg text-sm font-medium hover:bg-indigo-200 transition"
       >
         View Details →
       </button>

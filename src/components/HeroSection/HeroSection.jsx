@@ -368,85 +368,78 @@
 
 // export default HeroSection;
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getContest } from "../../features/contestSlice/contestSlice";
+import HeroUI from "./HeroUI";
 
-const HeroSection = () => {
+const HeroContainer = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const scrollRef = useRef(null);
+  const [activeIndex, setActiveIndex] = useState(0);
 
-  // Extract data from Redux state
   const { contests, loading, error } = useSelector((state) => state.contest);
+  const { user } = useSelector((state) => state.auth);
 
   useEffect(() => {
-    // Fetch contests if the list is empty
-    if (contests.length === 0) {
-      dispatch(getContest());
-    }
+    if (contests.length === 0) dispatch(getContest());
   }, [dispatch, contests.length]);
 
-  // Get the most recent contest to feature in the Hero
-  const featuredContest = contests[contests.length - 1];
+  // Filter only upcoming contests
+  const upcomingContests = useMemo(() => {
+    const now = new Date();
+    return contests.filter((contest) => new Date(contest.deadline) > now);
+  }, [contests]);
 
-  if (loading) {
-    return (
-      <div className="h-[70vh] flex items-center justify-center bg-gray-900 text-white">
-        <p className="text-xl animate-pulse">Loading latest contests...</p>
-      </div>
-    );
-  }
+  // Auto-slide logic
+  useEffect(() => {
+    if (upcomingContests.length > 1) {
+      const interval = setInterval(() => {
+        const nextIndex = (activeIndex + 1) % upcomingContests.length;
+        scrollToSlide(nextIndex);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [activeIndex, upcomingContests.length]);
 
-  if (error) {
-    return (
-      <div className="h-[70vh] flex items-center justify-center bg-red-900 text-white">
-        <p>Error: {error}</p>
-      </div>
-    );
-  }
+  const scrollToSlide = (index) => {
+    if (!scrollRef.current) return;
+    const width = scrollRef.current.offsetWidth;
+    scrollRef.current.scrollTo({ left: width * index, behavior: "smooth" });
+    setActiveIndex(index);
+  };
+
+  const handleScroll = () => {
+    if (scrollRef.current) {
+      const index = Math.round(
+        scrollRef.current.scrollLeft / scrollRef.current.offsetWidth,
+      );
+      if (index !== activeIndex) setActiveIndex(index);
+    }
+  };
+
+  const onJoinClick = (contestId) => {
+    if (!user) {
+      navigate("/login", { state: { from: window.location.pathname } });
+    } else {
+      navigate(`/contest/${contestId}`);
+    }
+  };
 
   return (
-    <section className="relative h-[80vh] w-full flex items-center justify-center overflow-hidden bg-gradient-to-r from-indigo-900 to-purple-900 text-white">
-      {/* Decorative Background Element */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute -top-24 -left-24 w-96 h-96 bg-blue-500 rounded-full blur-3xl"></div>
-        <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-pink-500 rounded-full blur-3xl"></div>
-      </div>
-
-      <div className="container mx-auto px-6 relative z-10 text-center">
-        {featuredContest ? (
-          <>
-            <span className="inline-block px-4 py-1 mb-6 text-sm font-semibold tracking-widest uppercase bg-indigo-500 rounded-full">
-              Latest {featuredContest.type || "Contest"}
-            </span>
-
-            <h1 className="text-5xl md:text-7xl font-bold mb-6 leading-tight">
-              {featuredContest.title}
-            </h1>
-
-            <p className="max-w-2xl mx-auto text-lg md:text-xl text-gray-300 mb-10">
-              {featuredContest.description || featuredContest.brief}
-            </p>
-
-            <div className="flex flex-col sm:flex-row justify-center gap-4">
-              <button className="px-8 py-4 bg-white text-indigo-900 font-bold rounded-lg shadow-lg hover:bg-gray-100 transition duration-300">
-                Join Contest
-              </button>
-              <div className="flex items-center justify-center px-8 py-4 border border-gray-400 rounded-lg">
-                <span className="text-sm">
-                  Deadline:{" "}
-                  {new Date(featuredContest.deadline).toLocaleDateString()}
-                </span>
-              </div>
-            </div>
-          </>
-        ) : (
-          <h1 className="text-4xl font-bold">
-            No contests available at the moment.
-          </h1>
-        )}
-      </div>
-    </section>
+    <HeroUI
+      contests={upcomingContests}
+      loading={loading}
+      error={error}
+      scrollRef={scrollRef}
+      activeIndex={activeIndex}
+      handleScroll={handleScroll}
+      scrollToSlide={scrollToSlide}
+      onJoinClick={onJoinClick}
+    />
   );
 };
 
-export default HeroSection;
+export default HeroContainer;
