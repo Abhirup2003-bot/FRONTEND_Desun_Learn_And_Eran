@@ -24,7 +24,7 @@ export const getContest = createAsyncThunk(
 
       const data = await res.json();
 
-      console.log("API RESPONSE 👉", data);
+      // console.log("API RESPONSE 👉", data);
 
       if (!res.ok) {
         return rejectWithValue(data?.msg || "Failed to fetch contests");

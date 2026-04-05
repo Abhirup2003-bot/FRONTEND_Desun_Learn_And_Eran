@@ -14,10 +14,6 @@ const Home = () => {
     error,
   } = useSelector((state) => state.contest);
 
-  console.log("contest data 👉", contests);
-  console.log("loading 👉", loading);
-  console.log("error 👉", error);
-
   useEffect(() => {
     dispatch(getContest());
   }, [dispatch]);
@@ -31,12 +27,12 @@ const Home = () => {
       <HeroSection />
 
       <div className="p-6">
-        <div className="bg-[#f1f6e3] rounded-2xl p-6 md:p-8 text-black shadow-lg ">
+        <div className="p-6 md:p-8 text-black ">
           <div className="max-w-7xl mx-auto">
-            {/* Header */}
+            {/* 🔵 Ongoing Contests */}
             <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
               <div>
-                <h1 className="text-3xl font-bold mb-2">Explore Contests 🚀</h1>
+                <h1 className="text-3xl font-bold mb-2">Ongoing Contests 🚀</h1>
                 <p className="text-sm opacity-90">
                   Join competitions & win rewards
                 </p>
@@ -50,13 +46,11 @@ const Home = () => {
               </button>
             </div>
 
-            {/* Status */}
             {loading && <p>Loading contests...</p>}
             {error && <p className="text-red-500">Error: {error}</p>}
             {!loading && contests.length === 0 && <p>No contests available</p>}
 
-            {/* Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
               {contests
                 .filter((contest) => contest.type === "Ongoing")
                 .slice(0, 3)
@@ -69,6 +63,26 @@ const Home = () => {
                   </div>
                 ))}
             </div>
+
+            {/* 🟡 Upcoming Contests */}
+            <div className="flex flex-col md:flex-row justify-between md:items-center mb-6 gap-4">
+              <div>
+                <h1 className="text-3xl font-bold mb-2">
+                  Upcoming Contests 🚀
+                </h1>
+                <p className="text-sm opacity-90">
+                  Get ready for upcoming challenges
+                </p>
+              </div>
+
+              <button
+                onClick={handleExplore}
+                className="bg-white text-[#82c600] px-6 py-2 rounded-lg font-semibold hover:scale-105 transition"
+              >
+                Explore
+              </button>
+            </div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {contests
                 .filter((contest) => contest.type === "Upcoming")

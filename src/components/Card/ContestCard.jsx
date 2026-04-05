@@ -1,5 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import defaultImage from "../../assets/mern-stack-developer.png";
 
 const ContestCard = ({ contest }) => {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ const ContestCard = ({ contest }) => {
       {/* Image */}
       <div className="relative rounded-xl overflow-hidden mb-4">
         <img
-          src={contest.image || "https://via.placeholder.com/300"}
+          src={contest.image || defaultImage}
           alt={contest.title}
           className="w-full h-60 object-cover"
         />
