@@ -13,6 +13,7 @@ import AdminLayout from "./components/AdminLayout";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminContestPage from "./pages/AdminContestPage";
+import ContestDetailsPage from "./pages/ContestDetailsPage";
 
 function App() {
   return (
@@ -30,7 +31,7 @@ function App() {
 
         {/* ✅ USER PROTECTED ROUTES */}
         <Route element={<ProtectedRoute />}>
-          {/* Example: add protected pages here */}
+          <Route path="/contest/:id" element={<ContestDetailsPage />} />
         </Route>
 
         {/* ✅ ADMIN ROUTES */}

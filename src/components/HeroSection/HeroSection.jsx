@@ -372,7 +372,7 @@ import React, { useEffect, useRef, useState, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getContest } from "../../features/contestSlice/contestSlice";
-import HeroUI from "./HeroUI";
+import HeroUI from "../../ui/HeroUI";
 
 const HeroContainer = () => {
   const dispatch = useDispatch();

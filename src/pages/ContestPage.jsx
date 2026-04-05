@@ -507,6 +507,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getContest } from "../features/contestSlice/contestSlice";
 import ContestCard from "../components/Card/ContestCard";
+import { Link } from "react-router-dom";
 import {
   FaFilter,
   FaTimes,
@@ -627,12 +628,11 @@ function ContestPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
           {filteredContests?.length > 0
             ? filteredContests.map((contest) => (
-                <div
-                  key={contest._id}
-                  className="transform hover:-translate-y-2 transition duration-300"
-                >
-                  <ContestCard contest={contest} />
-                </div>
+                <Link to={`/contest/${contest._id}`} key={contest._id}>
+                  <div className="transform hover:-translate-y-2 transition duration-300">
+                    <ContestCard contest={contest} />
+                  </div>
+                </Link>
               ))
             : !loading && (
                 <div className="col-span-full text-center mt-20">
