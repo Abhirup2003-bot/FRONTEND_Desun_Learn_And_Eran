@@ -14,6 +14,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import AdminContestPage from "./pages/AdminContestPage";
 import ContestDetailsPage from "./pages/ContestDetailsPage";
+import AdminUsersPage from "./pages/AdminUserPage";
 
 function App() {
   return (
@@ -38,6 +39,7 @@ function App() {
         <Route element={<AdminRoute />}>
           <Route path="/admin" element={<AdminLayout />}>
             <Route path="dashboard" element={<AdminDashboard />} />
+            <Route path="users" element={<AdminUsersPage />} />
 
             <Route path="contest" element={<AdminContestPage />} />
           </Route>

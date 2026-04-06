@@ -1,5 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
+// ================= LOAD FROM LOCAL STORAGE =================
+const savedAuth = JSON.parse(localStorage.getItem("auth"));
+
 // ================= LOGIN =================
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -103,7 +106,7 @@ export const forgetPassword = createAsyncThunk(
       }
 
       return data;
-    } catch (error) {
+    } catch {
       return rejectWithValue("Server not reachable");
     }
   },
@@ -113,9 +116,9 @@ export const forgetPassword = createAsyncThunk(
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    isLoggedIn: false,
-    user: null,
-    token: null,
+    isLoggedIn: savedAuth?.isLoggedIn || false,
+    user: savedAuth?.user || null,
+    token: savedAuth?.token || null,
     loading: false,
     error: null,
   },
@@ -128,19 +131,26 @@ const authSlice = createSlice({
         state.error = null;
       })
       .addCase(loginUser.fulfilled, (state, action) => {
-        // console.log("FULL PAYLOAD FROM BACKEND:", action.payload);
         state.loading = false;
         state.isLoggedIn = true;
-        state.user = action.payload.user;
-        state.token = action.payload.accessToken;
 
-        // 🔥 FIX: handle all backend response formats
-        const userData =
-          action.payload?.data || action.payload?.user || action.payload;
+        const userData = action.payload?.data || action.payload?.user || null;
+
+        const token =
+          action.payload?.accessToken || action.payload?.token || null;
 
         state.user = userData;
+        state.token = token;
 
-        // console.log("LOGIN USER:", userData);
+        // ✅ SAVE TO LOCAL STORAGE
+        localStorage.setItem(
+          "auth",
+          JSON.stringify({
+            user: userData,
+            token: token,
+            isLoggedIn: true,
+          }),
+        );
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.loading = false;
@@ -152,19 +162,13 @@ const authSlice = createSlice({
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state, action) => {
+      .addCase(registerUser.fulfilled, (state) => {
         state.loading = false;
-        state.isLoggedIn = true;
+
+        // ✅ Don't auto-login after register
         state.isLoggedIn = false;
         state.user = null;
-
-        // 🔥 FIX: handle all backend response formats
-        const userData =
-          action.payload?.data || action.payload?.user || action.payload;
-
-        state.user = userData;
-
-        // console.log("REGISTER USER:", userData);
+        state.token = null;
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;
@@ -179,12 +183,17 @@ const authSlice = createSlice({
         state.loading = false;
         state.isLoggedIn = false;
         state.user = null;
+        state.token = null;
+
+        // ✅ CLEAR STORAGE
+        localStorage.removeItem("auth");
       })
       .addCase(logoutUser.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
-        console.error(`This is coming from auth Logout Feature`);
       })
+
+      // ================= FORGOT PASSWORD =================
       .addCase(forgetPassword.pending, (state) => {
         state.loading = true;
       })

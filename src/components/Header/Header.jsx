@@ -1,10 +1,9 @@
 import React, { useState, useRef, useEffect } from "react";
 import Desunlogo from "../../assets/Desun Logo_.png";
-import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
+import { Link, NavLink, useNavigate } from "react-router-dom";
 import { Button } from "../index";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../../features/authSlice/authSlice";
-import { persistor } from "../../app/store";
 import {
   FaUserCircle,
   FaSignOutAlt,
@@ -43,17 +42,14 @@ const Header = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
+  // ✅ FIXED LOGOUT (NO redux-persist)
   const handleLogout = async () => {
     try {
-      dispatch(logoutUser()); // API call (may fail)
-
-      await persistor.purge(); // 🔥 clear localStorage
-
+      await dispatch(logoutUser()); // clears redux + localStorage
+      setMenuOpen(false); // optional UX
       navigate("/login");
     } catch (err) {
       console.error("Logout error:", err);
-
-      await persistor.purge();
       navigate("/login");
     }
   };
