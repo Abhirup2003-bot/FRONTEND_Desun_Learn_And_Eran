@@ -390,7 +390,9 @@ const HeroContainer = () => {
   // Filter only upcoming contests
   const upcomingContests = useMemo(() => {
     const now = new Date();
-    return contests.filter((contest) => new Date(contest.deadline) > now);
+    return contests
+      .filter((contest) => new Date(contest.deadline) > now)
+      .slice(0, 5);
   }, [contests]);
 
   // Auto-slide logic
