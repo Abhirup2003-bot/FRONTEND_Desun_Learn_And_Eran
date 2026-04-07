@@ -11,6 +11,7 @@ const AdminContestPageUI = ({
   loading,
   message,
   error,
+  fileRef,
 }) => {
   return (
     <div className="min-h-screen bg-gray-50 p-6 lg:p-10 font-sans text-gray-900">
@@ -79,6 +80,8 @@ const AdminContestPageUI = ({
                       className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
                     >
                       <option value="Upcoming">Upcoming</option>
+                      <option value="Ongoing">Ongoing</option>
+                      <option value="Completed">Completed</option>
                     </select>
                   </div>
                   <div>
@@ -161,6 +164,7 @@ const AdminContestPageUI = ({
                     type="file"
                     name="image"
                     onChange={handleChange}
+                    ref={fileRef}
                     className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
                 </div>
@@ -243,7 +247,9 @@ const AdminContestPageUI = ({
                         <span className="font-semibold text-gray-600">
                           📅 Ends:
                         </span>{" "}
-                        {new Date(contest.deadline).toLocaleDateString()}
+                        {contest.deadline
+                          ? new Date(contest.deadline).toLocaleDateString()
+                          : "N/A"}
                       </div>
                     </div>
                   </div>

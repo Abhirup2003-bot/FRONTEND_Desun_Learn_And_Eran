@@ -1,30 +1,59 @@
 import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getContest } from "../features/contestSlice/contestSlice";
 import { useParams } from "react-router-dom";
 import ContestDetailsPageUi from "../ui/ContestDetailsPageUi";
+import { getContest } from "../features/contestSlice/contestSlice";
 
 const ContestDetailsPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
 
-  const { contests, loading, error } = useSelector((state) => state.contest);
+  const {
+    contests = [],
+    loading,
+    error,
+  } = useSelector((state) => state.contest);
 
+  // ✅ Fetch contests if not already loaded
   useEffect(() => {
-    // Assuming getContest takes an ID, if not, adjust your slice accordingly
-    dispatch(getContest(id));
-  }, [dispatch, id]);
+    if (!contests.length) {
+      dispatch(getContest());
+    }
+  }, [dispatch, contests.length]);
 
-  if (loading)
-    return <div className="p-10 text-center">Loading Contest Details...</div>;
-  if (error)
-    return <div className="p-10 text-center text-red-500">Error: {error}</div>;
+  // ✅ Find contest (supports both _id and id)
+  const contestData = contests.find(
+    (c) => String(c._id || c.id) === String(id),
+  );
 
-  // Assuming contests is an array and we want the specific one, or the slice returns a single object
-  const contestData = Array.isArray(contests)
-    ? contests.find((c) => c.id === id)
-    : contests;
+  // ✅ Loading
+  if (loading) {
+    return (
+      <div className="p-10 text-center text-lg font-semibold">
+        Loading Contest Details...
+      </div>
+    );
+  }
 
+  // ✅ Error
+  if (error) {
+    return (
+      <div className="p-10 text-center text-red-500 font-semibold">
+        Error: {error}
+      </div>
+    );
+  }
+
+  // ✅ Not Found
+  if (!contestData) {
+    return (
+      <div className="p-10 text-center text-gray-500 font-semibold">
+        Contest not found.
+      </div>
+    );
+  }
+
+  // ✅ Success
   return <ContestDetailsPageUi data={contestData} />;
 };
 

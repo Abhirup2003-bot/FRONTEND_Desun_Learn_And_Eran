@@ -9,7 +9,7 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const res = await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn/logInUser",
+        "https://backend-ly6h.onrender.com/app/v1/Learn/logInUser",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -37,7 +37,7 @@ export const registerUser = createAsyncThunk(
   async ({ userName, email, password, phoneNumber }, { rejectWithValue }) => {
     try {
       const res = await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn/register",
+        "https://backend-ly6h.onrender.com/app/v1/Learn/register",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -65,7 +65,7 @@ export const logoutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const res = await fetch(
-        "https://backend-three-tau-88.vercel.app/app/v1/Learn/logOutUser",
+        "https://backend-ly6h.onrender.com/app/v1/Learn/logOutUser",
         {
           method: "POST",
           credentials: "include",

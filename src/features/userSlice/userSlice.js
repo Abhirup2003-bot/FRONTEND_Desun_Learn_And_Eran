@@ -22,7 +22,7 @@ export const getAllUsers = createAsyncThunk(
       });
 
       const data = await res.json();
-      console.log("GET USERS RESPONSE:", data);
+      // console.log("GET USERS RESPONSE:", data);
 
       if (!res.ok) {
         return rejectWithValue(data.message || "Failed to fetch users");
