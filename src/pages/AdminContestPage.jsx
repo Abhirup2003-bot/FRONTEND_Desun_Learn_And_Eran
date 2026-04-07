@@ -454,12 +454,12 @@
 
 import React, { useEffect, useState, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AdminContestPageUI from "../ui/AdminContestPageUI";
 import {
   getContest,
   createContest,
   updateContest,
   deleteContest,
-  resetContestState,
 } from "../features/contestSlice/contestSlice";
 
 const AdminContestPage = () => {
@@ -481,10 +481,9 @@ const AdminContestPage = () => {
     deadline: "",
     type: "Upcoming",
     prizes: "",
-    _id: null, // for editing
+    _id: null,
   });
 
-  // Fetch contests on load
   useEffect(() => {
     dispatch(getContest());
   }, [dispatch]);
@@ -495,23 +494,6 @@ const AdminContestPage = () => {
       ...prev,
       [name]: files ? files[0] : value,
     }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (formData._id) {
-      // Edit
-      dispatch(updateContest({ id: formData._id, formData, token }))
-        .unwrap()
-        .then(() => resetForm())
-        .catch(() => {});
-    } else {
-      // Create
-      dispatch(createContest({ formData, token }))
-        .unwrap()
-        .then(() => resetForm())
-        .catch(() => {});
-    }
   };
 
   const resetForm = () => {
@@ -529,12 +511,27 @@ const AdminContestPage = () => {
     if (fileRef.current) fileRef.current.value = "";
   };
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formData._id) {
+      dispatch(updateContest({ id: formData._id, formData, token }))
+        .unwrap()
+        .then(() => resetForm())
+        .catch(() => {});
+    } else {
+      dispatch(createContest({ formData, token }))
+        .unwrap()
+        .then(() => resetForm())
+        .catch(() => {});
+    }
+  };
+
   const handleEdit = (contest) => {
     setFormData({
       title: contest.title,
       description: contest.description,
       brief: contest.brief,
-      image: null, // user can replace
+      image: null,
       startingDate: new Date(contest.startingDate).toISOString().slice(0, 16),
       deadline: new Date(contest.deadline).toISOString().slice(0, 16),
       type: contest.type,
@@ -551,154 +548,18 @@ const AdminContestPage = () => {
   };
 
   return (
-    <div className="p-4 max-w-5xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">Admin Contest Page</h1>
-
-      {/* FORM */}
-      <form
-        onSubmit={handleSubmit}
-        className="p-4 border rounded mb-6 space-y-3"
-      >
-        {message && (
-          <div className="p-2 bg-green-200 text-green-800 rounded">
-            {message}
-          </div>
-        )}
-        {error && (
-          <div className="p-2 bg-red-200 text-red-800 rounded">{error}</div>
-        )}
-
-        <input
-          type="text"
-          name="title"
-          placeholder="Title"
-          value={formData.title}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-
-        <textarea
-          name="description"
-          placeholder="Description"
-          value={formData.description}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-
-        <textarea
-          name="brief"
-          placeholder="Brief"
-          value={formData.brief}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-
-        <input
-          type="file"
-          name="image"
-          ref={fileRef}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        />
-
-        <input
-          type="datetime-local"
-          name="startingDate"
-          value={formData.startingDate}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-
-        <input
-          type="datetime-local"
-          name="deadline"
-          value={formData.deadline}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-
-        <select
-          name="type"
-          value={formData.type}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-        >
-          <option value="Upcoming">Upcoming</option>
-          <option value="Ongoing">Ongoing</option>
-          <option value="Completed">Completed</option>
-        </select>
-
-        <input
-          type="number"
-          name="prizes"
-          placeholder="Prizes"
-          value={formData.prizes}
-          onChange={handleChange}
-          className="w-full p-2 border rounded"
-          required
-        />
-
-        <button
-          type="submit"
-          className="px-4 py-2 bg-blue-600 text-white rounded"
-          disabled={loading}
-        >
-          {formData._id ? "Update Contest" : "Create Contest"}
-        </button>
-        {formData._id && (
-          <button
-            type="button"
-            onClick={resetForm}
-            className="ml-2 px-4 py-2 bg-gray-400 text-white rounded"
-          >
-            Cancel
-          </button>
-        )}
-      </form>
-
-      {/* CONTEST LIST */}
-      <h2 className="text-xl font-bold mb-2">All Contests</h2>
-      {loading && <p>Loading...</p>}
-      {contests.length === 0 && <p>No contests available</p>}
-      <div className="space-y-2">
-        {contests.map((contest) => (
-          <div
-            key={contest._id}
-            className="p-4 border rounded flex justify-between items-center"
-          >
-            <div>
-              <h3 className="font-bold">{contest.title}</h3>
-              <p>{contest.brief}</p>
-              <p>Type: {contest.type}</p>
-              <p>Prizes: {contest.prizes}</p>
-              <p>
-                Start: {new Date(contest.startingDate).toLocaleString()} | End:{" "}
-                {new Date(contest.deadline).toLocaleString()}
-              </p>
-            </div>
-            <div className="space-x-2">
-              <button
-                onClick={() => handleEdit(contest)}
-                className="px-2 py-1 bg-yellow-500 text-white rounded"
-              >
-                Edit
-              </button>
-              <button
-                onClick={() => handleDelete(contest._id)}
-                className="px-2 py-1 bg-red-500 text-white rounded"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
+    <AdminContestPageUI
+      formData={formData}
+      handleChange={handleChange}
+      handleSubmit={handleSubmit}
+      handleEdit={handleEdit}
+      handleDelete={handleDelete}
+      resetForm={resetForm}
+      contests={contests}
+      loading={loading}
+      message={message}
+      error={error}
+    />
   );
 };
 
