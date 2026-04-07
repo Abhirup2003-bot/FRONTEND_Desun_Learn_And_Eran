@@ -1,6 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-/* ================= GET CONTEST ================= */
+/* ================= GET ================= */
 export const getContest = createAsyncThunk(
   "contest/getContest",
   async (_, { rejectWithValue }) => {
@@ -11,40 +11,27 @@ export const getContest = createAsyncThunk(
       const data = await res.json();
 
       if (!res.ok) {
-        return rejectWithValue(data?.msg || "Failed to fetch contests");
+        return rejectWithValue(data?.msg || "Failed");
       }
 
       return data.data;
-    } catch (error) {
-      return rejectWithValue(error.message);
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
   },
 );
 
-/* ================= CREATE CONTEST ================= */
+/* ================= CREATE ================= */
 export const createContest = createAsyncThunk(
   "contest/createContest",
   async ({ formData, token }, { rejectWithValue }) => {
     try {
-      // ✅ VALIDATION
-      if (!token) return rejectWithValue("❌ Authorization token missing.");
-      if (!formData.image) return rejectWithValue("❌ Image is required");
-      if (!formData.title || !formData.description || !formData.brief)
-        return rejectWithValue("❌ All fields are required");
-      if (Number(formData.prizes) < 0)
-        return rejectWithValue("❌ Prize must be a positive number");
-      if (new Date(formData.deadline) <= new Date(formData.startingDate))
-        return rejectWithValue("❌ Deadline must be after starting date");
+      if (!token) return rejectWithValue("No token");
 
       const fd = new FormData();
-      fd.append("title", formData.title);
-      fd.append("description", formData.description);
-      fd.append("brief", formData.brief);
-      fd.append("deadline", formData.deadline);
-      fd.append("type", formData.type);
-      fd.append("startingDate", formData.startingDate);
-      fd.append("prizes", formData.prizes.toString());
-      fd.append("image", formData.image);
+      Object.keys(formData).forEach((key) => {
+        if (formData[key]) fd.append(key, formData[key]);
+      });
 
       const res = await fetch(
         "https://backend-ly6h.onrender.com/app/v1/Admin/create-contest",
@@ -57,39 +44,36 @@ export const createContest = createAsyncThunk(
         },
       );
 
-      const text = await res.text();
-      let data;
-      try {
-        data = JSON.parse(text);
-      } catch {
-        throw new Error("Invalid server response");
-      }
+      const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data?.msg || "Create failed");
-      }
+      if (!res.ok) return rejectWithValue(data?.msg);
 
       return data.data;
-    } catch (error) {
-      return rejectWithValue(error.message);
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
   },
 );
 
-/* ================= UPDATE CONTEST ================= */
+/* ================= UPDATE ================= */
 export const updateContest = createAsyncThunk(
   "contest/updateContest",
   async ({ id, formData, token }, { rejectWithValue }) => {
     try {
+      if (!token) return rejectWithValue("No token");
+
       const fd = new FormData();
       fd.append("title", formData.title);
       fd.append("description", formData.description);
       fd.append("brief", formData.brief);
-      fd.append("startingDate", new Date(formData.startingDate).toISOString());
-      fd.append("deadline", new Date(formData.deadline).toISOString());
+      fd.append("startingDate", formData.startingDate); // ✅ FIXED
+      fd.append("deadline", formData.deadline); // ✅ FIXED
       fd.append("type", formData.type);
       fd.append("prizes", String(formData.prizes));
-      if (formData.image) fd.append("image", formData.image);
+
+      if (formData.image) {
+        fd.append("image", formData.image);
+      }
 
       const res = await fetch(
         `https://backend-ly6h.onrender.com/app/v1/Admin/update-contest/${id}`,
@@ -103,16 +87,19 @@ export const updateContest = createAsyncThunk(
       );
 
       const data = await res.json();
-      if (!res.ok) return rejectWithValue(data?.msg || "Update failed");
+
+      if (!res.ok) {
+        return rejectWithValue(data?.msg || "Update failed");
+      }
 
       return data.data;
-    } catch (error) {
-      return rejectWithValue(error.message);
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
   },
 );
 
-/* ================= DELETE CONTEST ================= */
+/* ================= DELETE ================= */
 export const deleteContest = createAsyncThunk(
   "contest/deleteContest",
   async ({ id, token }, { rejectWithValue }) => {
@@ -128,11 +115,12 @@ export const deleteContest = createAsyncThunk(
       );
 
       const data = await res.json();
-      if (!res.ok) return rejectWithValue(data?.msg || "Delete failed");
+
+      if (!res.ok) return rejectWithValue(data?.msg);
 
       return id;
-    } catch (error) {
-      return rejectWithValue(error.message);
+    } catch (err) {
+      return rejectWithValue(err.message);
     }
   },
 );
@@ -146,20 +134,12 @@ const contestSlice = createSlice({
     error: null,
     message: "",
   },
-  reducers: {
-    resetContestState: (state) => {
-      state.loading = false;
-      state.error = null;
-      state.message = "";
-    },
-  },
+  reducers: {},
   extraReducers: (builder) => {
     builder
       /* GET */
       .addCase(getContest.pending, (state) => {
         state.loading = true;
-        state.error = null;
-        state.message = "";
       })
       .addCase(getContest.fulfilled, (state, action) => {
         state.loading = false;
@@ -171,37 +151,29 @@ const contestSlice = createSlice({
       })
 
       /* CREATE */
-      .addCase(createContest.pending, (state) => {
-        state.loading = true;
-        state.error = null;
-        state.message = "";
-      })
       .addCase(createContest.fulfilled, (state, action) => {
-        state.loading = false;
         state.contests.push(action.payload);
-        state.message = "✅ Contest created successfully!";
-      })
-      .addCase(createContest.rejected, (state, action) => {
-        state.loading = false;
-        state.error = action.payload;
-        state.message = action.payload;
+        state.message = "Created successfully";
       })
 
       /* UPDATE */
       .addCase(updateContest.fulfilled, (state, action) => {
         const updated = action.payload;
-        state.contests = state.contests.map((contest) =>
-          contest._id === updated._id ? updated : contest,
-        );
+
+        const index = state.contests.findIndex((c) => c._id === updated._id);
+
+        if (index !== -1) {
+          state.contests[index] = updated;
+        }
+
+        state.message = "Updated successfully";
       })
 
       /* DELETE */
       .addCase(deleteContest.fulfilled, (state, action) => {
-        const id = action.payload;
-        state.contests = state.contests.filter((contest) => contest._id !== id);
+        state.contests = state.contests.filter((c) => c._id !== action.payload);
       });
   },
 });
 
-export const { resetContestState } = contestSlice.actions;
 export default contestSlice.reducer;

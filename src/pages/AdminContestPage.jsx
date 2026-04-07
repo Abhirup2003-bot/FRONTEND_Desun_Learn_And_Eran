@@ -15,6 +15,7 @@ const AdminContestPage = () => {
   const { contests, loading, error, message } = useSelector(
     (state) => state.contest,
   );
+
   const authState = useSelector((state) => state.auth);
   const token = authState?.token || authState?.user?.token || null;
 
@@ -34,7 +35,6 @@ const AdminContestPage = () => {
     dispatch(getContest());
   }, [dispatch]);
 
-  // ✅ Safely format date for datetime-local input
   const formatDate = (date) => {
     if (!date) return "";
     const d = new Date(date);
@@ -61,36 +61,30 @@ const AdminContestPage = () => {
       prizes: "",
       _id: null,
     });
+
     if (fileRef.current) fileRef.current.value = "";
   };
 
+  // ✅ FIXED HANDLE SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const data = new FormData();
-
-    data.append("title", formData.title);
-    data.append("description", formData.description);
-    data.append("brief", formData.brief);
-    data.append("startingDate", formData.startingDate);
-    data.append("deadline", formData.deadline);
-    data.append("type", formData.type);
-    data.append("prizes", formData.prizes);
-
-    if (formData.image) {
-      data.append("image", formData.image);
-    }
-
     if (formData._id) {
-      dispatch(updateContest({ id: formData._id, formData: data, token }))
+      dispatch(updateContest({ id: formData._id, formData, token }))
         .unwrap()
-        .then(() => resetForm())
-        .catch(() => {});
+        .then(() => {
+          dispatch(getContest()); // 🔥 refresh UI
+          resetForm();
+        })
+        .catch((err) => console.error(err));
     } else {
-      dispatch(createContest({ formData: data, token }))
+      dispatch(createContest({ formData, token }))
         .unwrap()
-        .then(() => resetForm())
-        .catch(() => {});
+        .then(() => {
+          dispatch(getContest()); // 🔥 refresh UI
+          resetForm();
+        })
+        .catch((err) => console.error(err));
     }
   };
 
@@ -106,12 +100,16 @@ const AdminContestPage = () => {
       prizes: contest.prizes || "",
       _id: contest._id,
     });
+
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
+  // ✅ FIXED DELETE
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this contest?")) {
-      dispatch(deleteContest({ id, token }));
+      dispatch(deleteContest({ id, token }))
+        .unwrap()
+        .then(() => dispatch(getContest())); // 🔥 refresh
     }
   };
 
@@ -127,7 +125,7 @@ const AdminContestPage = () => {
       loading={loading}
       message={message}
       error={error}
-      fileRef={fileRef} // pass ref to UI
+      fileRef={fileRef}
     />
   );
 };
