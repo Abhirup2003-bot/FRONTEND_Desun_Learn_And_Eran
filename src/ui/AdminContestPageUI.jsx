@@ -103,6 +103,23 @@ const AdminContestPageUI = ({
                   </div>
                 </div>
 
+                {/* ✅ PARTICIPATION TYPE (ADDED, SAME STYLE) */}
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 uppercase mb-1 ml-1">
+                    Participation Type
+                  </label>
+                  <select
+                    name="participationType"
+                    value={formData.participationType || "solo"}
+                    onChange={handleChange}
+                    className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none"
+                    required
+                  >
+                    <option value="solo">Solo</option>
+                    <option value="team">Team</option>
+                  </select>
+                </div>
+
                 {/* BRIEF */}
                 <div>
                   <label className="block text-xs font-semibold text-gray-500 uppercase mb-1 ml-1">
@@ -177,7 +194,6 @@ const AdminContestPageUI = ({
                     className="w-full text-xs text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
                   />
 
-                  {/* PREVIEW */}
                   {formData.imagePreview && (
                     <img
                       src={formData.imagePreview}
@@ -251,6 +267,7 @@ const AdminContestPageUI = ({
                         ? new Date(contest.deadline).toLocaleDateString()
                         : "N/A"}
                     </span>
+                    <span>👥 {contest.participationType}</span>
                   </div>
                 </div>
 

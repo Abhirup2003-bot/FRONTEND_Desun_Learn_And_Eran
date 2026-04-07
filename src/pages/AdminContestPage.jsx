@@ -13,7 +13,7 @@ const AdminContestPage = () => {
   const fileRef = useRef();
 
   const { contests, loading, error, message } = useSelector(
-    (state) => state.contest,
+    (state) => state.contest
   );
 
   const authState = useSelector((state) => state.auth);
@@ -28,6 +28,7 @@ const AdminContestPage = () => {
     deadline: "",
     type: "Upcoming",
     prizes: "",
+    participationType: "solo", // ✅ ADDED
     _id: null,
   });
 
@@ -43,10 +44,19 @@ const AdminContestPage = () => {
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: files ? files[0] : value,
-    }));
+
+    if (files) {
+      setFormData((prev) => ({
+        ...prev,
+        image: files[0],
+        imagePreview: URL.createObjectURL(files[0]),
+      }));
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   const resetForm = () => {
@@ -55,17 +65,18 @@ const AdminContestPage = () => {
       description: "",
       brief: "",
       image: null,
+      imagePreview: null,
       startingDate: "",
       deadline: "",
       type: "Upcoming",
       prizes: "",
+      participationType: "solo", // ✅ RESET
       _id: null,
     });
 
     if (fileRef.current) fileRef.current.value = "";
   };
 
-  // ✅ FIXED HANDLE SUBMIT
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -73,18 +84,18 @@ const AdminContestPage = () => {
       dispatch(updateContest({ id: formData._id, formData, token }))
         .unwrap()
         .then(() => {
-          dispatch(getContest()); // 🔥 refresh UI
+          dispatch(getContest());
           resetForm();
         })
-        .catch((err) => console.error(err));
+        .catch(console.error);
     } else {
       dispatch(createContest({ formData, token }))
         .unwrap()
         .then(() => {
-          dispatch(getContest()); // 🔥 refresh UI
+          dispatch(getContest());
           resetForm();
         })
-        .catch((err) => console.error(err));
+        .catch(console.error);
     }
   };
 
@@ -94,22 +105,23 @@ const AdminContestPage = () => {
       description: contest.description || "",
       brief: contest.brief || "",
       image: null,
+      imagePreview: contest.image || null,
       startingDate: formatDate(contest.startingDate),
       deadline: formatDate(contest.deadline),
       type: contest.type || "Upcoming",
       prizes: contest.prizes || "",
+      participationType: contest.participationType || "solo", // ✅ ADDED
       _id: contest._id,
     });
 
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // ✅ FIXED DELETE
   const handleDelete = (id) => {
     if (window.confirm("Are you sure you want to delete this contest?")) {
       dispatch(deleteContest({ id, token }))
         .unwrap()
-        .then(() => dispatch(getContest())); // 🔥 refresh
+        .then(() => dispatch(getContest()));
     }
   };
 
