@@ -1,33 +1,76 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import ContestDetailsPageUi from "../ui/ContestDetailsPageUi";
-import { getContest } from "../features/contestSlice/contestSlice";
+import {
+  getContest,
+  participateInContest,
+  clearMessage,
+} from "../features/contestSlice/contestSlice";
 
 const ContestDetailsPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const authState = useSelector((state) => state.auth);
+  const token = authState?.token || authState?.user?.token;
 
   const {
     contests = [],
     loading,
     error,
+    message,
   } = useSelector((state) => state.contest);
 
-  // ✅ Fetch contests if not already loaded
+  /* ================= FETCH ================= */
   useEffect(() => {
-    if (!contests.length) {
-      dispatch(getContest());
+    dispatch(getContest());
+  }, [dispatch]);
+
+  /* ================= FIND CONTEST ================= */
+  const contestData = useMemo(() => {
+    return contests.find((c) => String(c._id || c.id) === String(id));
+  }, [contests, id]);
+
+  /* ================= PARTICIPATE ================= */
+  const handleParticipate = (teamName) => {
+    if (!teamName || !teamName.trim()) {
+      alert("Please enter a valid team name");
+      return;
     }
-  }, [dispatch, contests.length]);
 
-  // ✅ Find contest (supports both _id and id)
-  const contestData = contests.find(
-    (c) => String(c._id || c.id) === String(id),
-  );
+    if (!token) {
+      alert("Please login first");
+      return;
+    }
 
-  // ✅ Loading
-  if (loading) {
+    dispatch(
+      participateInContest({
+        contestId: contestData._id,
+        teamName: teamName.trim(),
+        token, // ✅ PASS TOKEN
+      }),
+    );
+  };
+
+  /* ================= MESSAGE / ERROR ================= */
+  useEffect(() => {
+    if (message) {
+      alert(message);
+      dispatch(clearMessage());
+    }
+  }, [message, dispatch]);
+
+  useEffect(() => {
+    if (error) {
+      alert(error);
+      dispatch(clearMessage());
+    }
+  }, [error, dispatch]);
+
+  /* ================= UI STATES ================= */
+
+  // Initial loading
+  if (loading && contests.length === 0) {
     return (
       <div className="p-10 text-center text-lg font-semibold">
         Loading Contest Details...
@@ -35,17 +78,8 @@ const ContestDetailsPage = () => {
     );
   }
 
-  // ✅ Error
-  if (error) {
-    return (
-      <div className="p-10 text-center text-red-500 font-semibold">
-        Error: {error}
-      </div>
-    );
-  }
-
-  // ✅ Not Found
-  if (!contestData) {
+  // Contest not found after load
+  if (!loading && !contestData) {
     return (
       <div className="p-10 text-center text-gray-500 font-semibold">
         Contest not found.
@@ -53,8 +87,13 @@ const ContestDetailsPage = () => {
     );
   }
 
-  // ✅ Success
-  return <ContestDetailsPageUi data={contestData} />;
+  return (
+    <ContestDetailsPageUi
+      data={contestData}
+      onParticipate={handleParticipate}
+      loading={loading} // 🔥 pass loading for button disable
+    />
+  );
 };
 
 export default ContestDetailsPage;

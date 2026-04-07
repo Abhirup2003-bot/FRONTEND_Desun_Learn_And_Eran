@@ -66,8 +66,8 @@ export const updateContest = createAsyncThunk(
       fd.append("title", formData.title);
       fd.append("description", formData.description);
       fd.append("brief", formData.brief);
-      fd.append("startingDate", formData.startingDate); // ✅ FIXED
-      fd.append("deadline", formData.deadline); // ✅ FIXED
+      fd.append("startingDate", formData.startingDate);
+      fd.append("deadline", formData.deadline);
       fd.append("type", formData.type);
       fd.append("prizes", String(formData.prizes));
 
@@ -125,6 +125,36 @@ export const deleteContest = createAsyncThunk(
   },
 );
 
+/* ================= PARTICIPATE ================= */
+export const participateInContest = createAsyncThunk(
+  "contest/participate",
+  async ({ contestId, teamName, token }, { rejectWithValue }) => {
+    try {
+      const res = await fetch(
+        `https://backend-ly6h.onrender.com/app/v1/Learn/perticipating/${contestId}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`, // ✅ FIX
+          },
+          body: JSON.stringify({ teamName }),
+        },
+      );
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        return rejectWithValue(data?.msg || "Participation failed");
+      }
+
+      return data;
+    } catch (err) {
+      return rejectWithValue(err.message);
+    }
+  },
+);
+
 /* ================= SLICE ================= */
 const contestSlice = createSlice({
   name: "contest",
@@ -134,7 +164,12 @@ const contestSlice = createSlice({
     error: null,
     message: "",
   },
-  reducers: {},
+  reducers: {
+    clearMessage: (state) => {
+      state.message = "";
+      state.error = null;
+    },
+  },
   extraReducers: (builder) => {
     builder
       /* GET */
@@ -172,8 +207,24 @@ const contestSlice = createSlice({
       /* DELETE */
       .addCase(deleteContest.fulfilled, (state, action) => {
         state.contests = state.contests.filter((c) => c._id !== action.payload);
+      })
+
+      /* PARTICIPATE */
+      .addCase(participateInContest.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(participateInContest.fulfilled, (state, action) => {
+        state.loading = false;
+        state.message = action.payload.msg;
+      })
+      .addCase(participateInContest.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
       });
   },
 });
+
+export const { clearMessage } = contestSlice.actions;
 
 export default contestSlice.reducer;

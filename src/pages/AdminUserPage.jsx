@@ -9,6 +9,7 @@ import AdminUsersPageUI from "../ui/AdminUsersPageUI";
 
 const AdminUserPage = () => {
   const dispatch = useDispatch();
+
   const {
     users = [],
     loading,
@@ -16,54 +17,79 @@ const AdminUserPage = () => {
     error,
   } = useSelector((state) => state.users);
 
+  // STATES
   const [search, setSearch] = useState("");
   const [editUser, setEditUser] = useState(null);
-  const [name, setName] = useState("");
 
+  const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const [role, setRole] = useState("");
+
+  // FETCH USERS
   useEffect(() => {
     dispatch(getAllUsers());
   }, [dispatch]);
 
-  // Safe filtering
+  // FILTER USERS
   const filteredUsers = useMemo(() => {
     return users.filter((user) => {
-      const userName = user?.name?.toLowerCase() || "";
+      const userName =
+        user?.userName?.toLowerCase() || user?.name?.toLowerCase() || "";
       const userEmail = user?.email?.toLowerCase() || "";
       const query = search.toLowerCase();
+
       return userName.includes(query) || userEmail.includes(query);
     });
   }, [users, search]);
 
+  // EDIT
   const handleEdit = (user) => {
     setEditUser(user);
-    setName(user?.name || "");
+    setName(user?.userName || user?.name || "");
+    setPhoneNumber(user?.phoneNumber || "");
+    setRole(user?.role || "");
   };
 
-  const handleUpdate = async () => {
-    if (!name.trim()) return;
+  // CLOSE MODAL ✅ FIX
+  const handleClose = () => {
+    setEditUser(null);
+    setName("");
+    setPhoneNumber("");
+    setRole("");
+  };
 
+  // UPDATE
+  const token = useSelector((state) => state.auth?.token);
+
+  const handleUpdate = async () => {
     try {
+      const userData = {
+        userName: name,
+        phoneNumber,
+        role,
+      };
+
       await dispatch(
         updateUser({
-          id: editUser._id,
-          updatedData: { name },
+          id: editUser?._id,
+          userData,
+          token,
         }),
       ).unwrap();
 
-      setEditUser(null);
-      setName("");
-    } catch (err) {
-      console.error(err);
+      handleClose();
+    } catch (error) {
+      console.error("UPDATE ERROR:", error);
     }
   };
-
+  // DELETE
   const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    if (!window.confirm("Delete this user?")) return;
 
     try {
       await dispatch(deleteUser(id)).unwrap();
     } catch (err) {
-      console.error(err);
+      console.error("DELETE ERROR:", err);
     }
   };
 
@@ -80,7 +106,12 @@ const AdminUserPage = () => {
       editUser={editUser}
       name={name}
       setName={setName}
+      phoneNumber={phoneNumber}
+      setPhoneNumber={setPhoneNumber}
+      role={role}
+      setRole={setRole}
       handleUpdate={handleUpdate}
+      handleClose={handleClose} // ✅ IMPORTANT
     />
   );
 };
