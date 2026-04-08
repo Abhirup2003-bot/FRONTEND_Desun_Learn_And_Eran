@@ -40,22 +40,28 @@ const ContestDetailsPage = () => {
       return;
     }
 
-    if (contestData.participationType === "Team") {
-      // Navigate directly to team creation/join page
+    if (!contestData) {
+      alert("Contest not found");
+      return;
+    }
+
+    // ✅ SAFE TYPE (NO CRASH)
+    const type = contestData?.participationType?.toLowerCase() || "solo";
+
+    if (type === "team") {
       navigate(`/team-contest/${contestData._id}`);
     } else {
-      // Solo contest → participate directly
       dispatch(
         participateInContest({
           contestId: contestData._id,
-          teamName: "", // Solo doesn't need a team
+          teamName: "",
           token,
         }),
       );
     }
   };
 
-  /* ================= MESSAGE / ERROR ================= */
+  /* ================= MESSAGE ================= */
   useEffect(() => {
     if (message) {
       alert(message);
@@ -70,7 +76,7 @@ const ContestDetailsPage = () => {
     }
   }, [error, dispatch]);
 
-  /* ================= UI STATES ================= */
+  /* ================= UI ================= */
   if (loading && contests.length === 0) {
     return (
       <div className="p-10 text-center text-lg font-semibold">
@@ -91,7 +97,7 @@ const ContestDetailsPage = () => {
     <ContestDetailsPageUi
       data={contestData}
       onParticipate={handleParticipate}
-      loading={loading} // 🔥 pass loading for button disable
+      loading={loading}
     />
   );
 };

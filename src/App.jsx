@@ -15,6 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AdminContestPage from "./pages/AdminContestPage";
 import ContestDetailsPage from "./pages/ContestDetailsPage";
 import AdminUsersPage from "./pages/AdminUserPage";
+import TeamContestPage from "./pages/TeamContestPage";
 
 function App() {
   return (
@@ -33,6 +34,7 @@ function App() {
         {/* ✅ USER PROTECTED ROUTES */}
         <Route element={<ProtectedRoute />}>
           <Route path="/contest/:id" element={<ContestDetailsPage />} />
+          <Route path="/team-contest/:id" element={<TeamContestPage />} />
         </Route>
 
         {/* ✅ ADMIN ROUTES */}

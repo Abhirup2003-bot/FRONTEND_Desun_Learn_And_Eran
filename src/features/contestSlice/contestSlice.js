@@ -128,7 +128,7 @@ export const deleteContest = createAsyncThunk(
 /* ================= PARTICIPATE ================= */
 export const participateInContest = createAsyncThunk(
   "contest/participate",
-  async ({ contestId, teamName, token }, { rejectWithValue }) => {
+  async ({ contestId, teamId, token }, { rejectWithValue }) => {
     try {
       const res = await fetch(
         `https://backend-ly6h.onrender.com/app/v1/Learn/perticipating/${contestId}`,
@@ -138,7 +138,7 @@ export const participateInContest = createAsyncThunk(
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`, // ✅ FIX
           },
-          body: JSON.stringify({ teamName }),
+          body: JSON.stringify({ teamId }),
         },
       );
 
