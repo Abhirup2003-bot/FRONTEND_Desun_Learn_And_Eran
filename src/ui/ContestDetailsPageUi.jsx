@@ -1,7 +1,12 @@
 import React from "react";
 import { Calendar, Clock, Users } from "lucide-react";
 
-const ContestDetailsPageUi = ({ data, onParticipate, loading }) => {
+const ContestDetailsPageUi = ({
+  data,
+  onParticipate,
+  onSubmitProject,
+  loading,
+}) => {
   if (!data) return null;
 
   const {
@@ -14,7 +19,19 @@ const ContestDetailsPageUi = ({ data, onParticipate, loading }) => {
     startingDate,
     prizes,
     participationType = "Solo",
+    isParticipated,
   } = data;
+
+  /* ================= SAFE CONDITIONS ================= */
+
+  // ✅ FIX: ensure boolean (avoid undefined/null)
+  const hasParticipated = Boolean(isParticipated);
+  console.log("Contest Data:", data);
+
+  // ✅ FIX: safe lowercase
+  const isOngoing = (type || "").toLowerCase() === "ongoing";
+
+  /* ================= UI ================= */
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -25,91 +42,96 @@ const ContestDetailsPageUi = ({ data, onParticipate, loading }) => {
             <img
               src={image}
               alt="contest"
-              className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+              className="w-full h-full object-cover"
             />
           </div>
         )}
 
-        {/* TYPE & PARTICIPATION */}
-        <div className="flex flex-wrap gap-3 mb-4">
+        {/* TAGS */}
+        <div className="flex gap-3 mb-4">
           {type && (
-            <span className="inline-block bg-indigo-500 text-white text-xs px-3 py-1 rounded-full uppercase font-semibold tracking-wide">
+            <span className="bg-indigo-500 text-white px-3 py-1 rounded-full text-xs">
               {type}
             </span>
           )}
-          <span className="inline-flex items-center gap-1 bg-green-100 text-green-800 text-xs px-3 py-1 rounded-full uppercase font-semibold tracking-wide">
+
+          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs flex items-center gap-1">
             <Users size={12} />
             {participationType}
           </span>
+
+          {/* ✅ Joined badge */}
+          {hasParticipated && (
+            <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs">
+              Joined
+            </span>
+          )}
         </div>
 
         {/* TITLE */}
-        <h1 className="text-4xl font-extrabold mb-6 text-gray-900">{title}</h1>
+        <h1 className="text-4xl font-bold mb-6">{title}</h1>
 
         {/* DATES */}
-        <div className="flex flex-wrap gap-8 mb-10 border-b border-gray-200 pb-6">
+        <div className="flex gap-8 mb-8 border-b pb-6">
           {startingDate && (
             <div className="flex items-center gap-2">
-              <Calendar className="text-indigo-500" size={20} />
-              <div>
-                <p className="text-xs text-gray-400">Start Date</p>
-                <p className="font-semibold text-gray-700">
-                  {formatDate(startingDate)}
-                </p>
-              </div>
+              <Calendar size={20} />
+              {formatDate(startingDate)}
             </div>
           )}
 
           {deadline && (
-            <div className="flex items-center gap-2">
-              <Clock className="text-red-500" size={20} />
-              <div>
-                <p className="text-xs text-gray-400">Deadline</p>
-                <p className="font-semibold text-red-500">
-                  {formatDate(deadline)}
-                </p>
-              </div>
+            <div className="flex items-center gap-2 text-red-500">
+              <Clock size={20} />
+              {formatDate(deadline)}
             </div>
           )}
         </div>
 
         {/* DESCRIPTION */}
-        {description && (
-          <div className="mb-10">
-            <h2 className="text-xl font-bold mb-3 text-gray-900">
-              Description
-            </h2>
-            <p className="text-gray-600 leading-relaxed">{description}</p>
-          </div>
-        )}
+        {description && <p className="mb-6 text-gray-600">{description}</p>}
 
         {/* BRIEF */}
-        {brief && (
-          <div className="mb-10">
-            <h2 className="text-xl font-bold mb-3 text-gray-900">Brief</h2>
-            <p className="text-gray-600 leading-relaxed">{brief}</p>
-          </div>
-        )}
+        {brief && <p className="mb-6 text-gray-600">{brief}</p>}
 
-        {/* PRIZES */}
-        {prizes && (
-          <div className="mb-10">
-            <h2 className="text-xl font-bold mb-3 text-gray-900">Prizes</h2>
-            <p className="text-gray-700 font-semibold text-lg">${prizes}</p>
-          </div>
-        )}
+        {/* PRIZE */}
+        {prizes && <p className="font-bold text-lg mb-6">${prizes}</p>}
 
-        {/* PARTICIPATE BUTTON */}
-        <div className="mt-6 max-w-md">
-          <button
-            onClick={onParticipate}
-            disabled={loading}
-            className={`w-full px-6 py-3 rounded-xl font-bold text-white text-lg transition
-              ${loading ? "bg-gray-400 cursor-not-allowed" : "bg-indigo-600 hover:bg-indigo-700 shadow-lg"}
-            `}
-          >
-            {loading ? "Processing..." : "Participate Now"}
-          </button>
+        {/* ================= BUTTONS ================= */}
+
+        <div className="max-w-md space-y-3">
+          {/* ✅ CASE 1: USER JOINED + ONGOING */}
+          {hasParticipated && isOngoing && (
+            <button
+              onClick={onSubmitProject}
+              className="w-full px-6 py-3 rounded-xl font-bold text-white text-lg bg-green-600 hover:bg-green-700"
+            >
+              🚀 Submit Project
+            </button>
+          )}
+
+          {/* ✅ CASE 2: USER NOT JOINED */}
+          {!hasParticipated && (
+            <button
+              onClick={onParticipate}
+              disabled={loading}
+              className={`w-full px-6 py-3 rounded-xl font-bold text-white text-lg ${
+                loading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
+              }`}
+            >
+              {loading ? "Processing..." : "Participate Now"}
+            </button>
+          )}
+
+          {/* ✅ CASE 3: JOINED BUT NOT STARTED */}
+          {hasParticipated && !isOngoing && (
+            <button
+              disabled
+              className="w-full px-6 py-3 rounded-xl font-bold text-white text-lg bg-gray-400"
+            >
+              Contest not started yet
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -119,10 +141,5 @@ const ContestDetailsPageUi = ({ data, onParticipate, loading }) => {
 export default ContestDetailsPageUi;
 
 function formatDate(date) {
-  if (!date) return "";
-  return new Date(date).toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+  return new Date(date).toLocaleDateString();
 }

@@ -157,18 +157,33 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-      // ================= REGISTER =================
+      // ================= REGISTER (🔥 FIXED) =================
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(registerUser.fulfilled, (state) => {
+      .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
 
-        // ✅ Don't auto-login after register
-        state.isLoggedIn = false;
-        state.user = null;
-        state.token = null;
+        // ✅ SAME LOGIC AS LOGIN
+        const userData = action.payload?.data || action.payload?.user || null;
+
+        const token =
+          action.payload?.accessToken || action.payload?.token || null;
+
+        state.isLoggedIn = true;
+        state.user = userData;
+        state.token = token;
+
+        // ✅ SAVE TO LOCAL STORAGE
+        localStorage.setItem(
+          "auth",
+          JSON.stringify({
+            user: userData,
+            token: token,
+            isLoggedIn: true,
+          }),
+        );
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.loading = false;

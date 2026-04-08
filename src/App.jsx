@@ -16,6 +16,7 @@ import AdminContestPage from "./pages/AdminContestPage";
 import ContestDetailsPage from "./pages/ContestDetailsPage";
 import AdminUsersPage from "./pages/AdminUserPage";
 import TeamContestPage from "./pages/TeamContestPage";
+import SubmitProjectPage from "./pages/SubmitProjectPage";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/contest/:id" element={<ContestDetailsPage />} />
           <Route path="/team-contest/:id" element={<TeamContestPage />} />
+          <Route path="/submit-project/:id" element={<SubmitProjectPage />} />
         </Route>
 
         {/* ✅ ADMIN ROUTES */}

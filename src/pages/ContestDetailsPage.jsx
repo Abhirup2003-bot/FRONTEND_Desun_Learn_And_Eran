@@ -30,7 +30,7 @@ const ContestDetailsPage = () => {
 
   /* ================= FIND CONTEST ================= */
   const contestData = useMemo(() => {
-    return contests.find((c) => String(c._id || c.id) === String(id));
+    return contests.find((c) => String(c._id) === String(id));
   }, [contests, id]);
 
   /* ================= PARTICIPATE ================= */
@@ -40,12 +40,6 @@ const ContestDetailsPage = () => {
       return;
     }
 
-    if (!contestData) {
-      alert("Contest not found");
-      return;
-    }
-
-    // ✅ SAFE TYPE (NO CRASH)
     const type = contestData?.participationType?.toLowerCase() || "solo";
 
     if (type === "team") {
@@ -54,14 +48,23 @@ const ContestDetailsPage = () => {
       dispatch(
         participateInContest({
           contestId: contestData._id,
-          teamName: "",
           token,
         }),
       );
     }
   };
 
-  /* ================= MESSAGE ================= */
+  /* ================= SUBMIT ================= */
+  const handleSubmitProject = () => {
+    if (!token) {
+      alert("Please login first");
+      return;
+    }
+
+    navigate(`/submit-project/${contestData._id}`);
+  };
+
+  /* ================= ALERTS ================= */
   useEffect(() => {
     if (message) {
       alert(message);
@@ -78,25 +81,18 @@ const ContestDetailsPage = () => {
 
   /* ================= UI ================= */
   if (loading && contests.length === 0) {
-    return (
-      <div className="p-10 text-center text-lg font-semibold">
-        Loading Contest Details...
-      </div>
-    );
+    return <div className="p-10 text-center">Loading...</div>;
   }
 
-  if (!loading && !contestData) {
-    return (
-      <div className="p-10 text-center text-gray-500 font-semibold">
-        Contest not found.
-      </div>
-    );
+  if (!contestData) {
+    return <div className="p-10 text-center">Contest not found</div>;
   }
 
   return (
     <ContestDetailsPageUi
       data={contestData}
       onParticipate={handleParticipate}
+      onSubmitProject={() => navigate(`/submit-project/${id}`)}
       loading={loading}
     />
   );
