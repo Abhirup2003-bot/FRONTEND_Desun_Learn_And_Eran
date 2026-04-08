@@ -624,12 +624,15 @@ function ContestPage() {
           <p className="text-red-500 bg-red-100 p-3 rounded-lg">{error}</p>
         )}
 
-        {/* Contest Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8 items-stretch">
           {filteredContests?.length > 0
             ? filteredContests.map((contest) => (
-                <Link to={`/contest/${contest._id}`} key={contest._id}>
-                  <div className="transform hover:-translate-y-2 transition duration-300">
+                <Link
+                  to={`/contest/${contest._id}`}
+                  key={contest._id}
+                  className="h-full"
+                >
+                  <div className="transform hover:-translate-y-2 transition duration-300 h-full">
                     <ContestCard contest={contest} />
                   </div>
                 </Link>

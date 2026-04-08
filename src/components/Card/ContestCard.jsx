@@ -25,7 +25,7 @@ const ContestCard = ({ contest }) => {
     : "bg-amber-500/10 text-amber-600 border-amber-200/50";
 
   return (
-    <div className="group relative bg-white border border-slate-200/60 rounded-[32px] p-3 pb-6 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 overflow-hidden">
+    <div className="group relative bg-white border border-slate-200/60 rounded-[32px] p-3 pb-6 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 overflow-hidden flex flex-col h-full">
       {/* --- Image Section --- */}
       <div className="relative h-48 w-full overflow-hidden rounded-[24px] z-0">
         <img
@@ -39,7 +39,9 @@ const ContestCard = ({ contest }) => {
           className={`absolute top-4 left-4 backdrop-blur-md border px-3 py-1.5 rounded-full shadow-sm flex items-center gap-2 ${badgeColors}`}
         >
           <div
-            className={`w-1.5 h-1.5 rounded-full ${isOngoing ? "bg-emerald-500 animate-pulse" : "bg-amber-500"}`}
+            className={`w-1.5 h-1.5 rounded-full ${
+              isOngoing ? "bg-emerald-500 animate-pulse" : "bg-amber-500"
+            }`}
           />
           <span className="text-[10px] font-bold uppercase tracking-widest">
             {contest.type || "Contest"}
@@ -48,7 +50,7 @@ const ContestCard = ({ contest }) => {
       </div>
 
       {/* --- Content Section --- */}
-      <div className="px-2 pt-5">
+      <div className="px-2 pt-5 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-2">
           <h2 className="text-xl font-bold text-slate-900 leading-tight tracking-tight group-hover:text-indigo-600 transition-colors duration-300">
             {contest.title}
@@ -97,16 +99,18 @@ const ContestCard = ({ contest }) => {
           </div>
         </div>
 
-        {/* --- Premium Button --- */}
-        <button
-          onClick={handleExplore}
-          className="group/btn relative w-full h-12 flex items-center justify-center bg-slate-900 text-white rounded-2xl overflow-hidden transition-all duration-300 hover:bg-indigo-600 active:scale-95 shadow-xl shadow-slate-200"
-        >
-          <span className="z-10 flex items-center gap-2 font-bold text-sm">
-            Join Competition
-            <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
-          </span>
-        </button>
+        {/* --- Button (STICKS TO BOTTOM) --- */}
+        <div className="mt-auto">
+          <button
+            onClick={handleExplore}
+            className="group/btn relative w-full h-12 flex items-center justify-center bg-slate-900 text-white rounded-2xl overflow-hidden transition-all duration-300 hover:bg-indigo-600 active:scale-95 shadow-xl shadow-slate-200"
+          >
+            <span className="z-10 flex items-center gap-2 font-bold text-sm">
+              Join Competition
+              <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover/btn:translate-x-1.5" />
+            </span>
+          </button>
+        </div>
       </div>
     </div>
   );
