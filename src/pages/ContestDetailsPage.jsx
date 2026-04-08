@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import ContestDetailsPageUi from "../ui/ContestDetailsPageUi";
 import {
   getContest,
@@ -11,6 +11,8 @@ import {
 const ContestDetailsPage = () => {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const authState = useSelector((state) => state.auth);
   const token = authState?.token || authState?.user?.token;
 
@@ -32,24 +34,25 @@ const ContestDetailsPage = () => {
   }, [contests, id]);
 
   /* ================= PARTICIPATE ================= */
-  const handleParticipate = (teamName) => {
-    if (!teamName || !teamName.trim()) {
-      alert("Please enter a valid team name");
-      return;
-    }
-
+  const handleParticipate = () => {
     if (!token) {
       alert("Please login first");
       return;
     }
 
-    dispatch(
-      participateInContest({
-        contestId: contestData._id,
-        teamName: teamName.trim(),
-        token, // ✅ PASS TOKEN
-      }),
-    );
+    if (contestData.participationType === "Team") {
+      // Navigate directly to team creation/join page
+      navigate(`/team-contest/${contestData._id}`);
+    } else {
+      // Solo contest → participate directly
+      dispatch(
+        participateInContest({
+          contestId: contestData._id,
+          teamName: "", // Solo doesn't need a team
+          token,
+        }),
+      );
+    }
   };
 
   /* ================= MESSAGE / ERROR ================= */
@@ -68,8 +71,6 @@ const ContestDetailsPage = () => {
   }, [error, dispatch]);
 
   /* ================= UI STATES ================= */
-
-  // Initial loading
   if (loading && contests.length === 0) {
     return (
       <div className="p-10 text-center text-lg font-semibold">
@@ -78,7 +79,6 @@ const ContestDetailsPage = () => {
     );
   }
 
-  // Contest not found after load
   if (!loading && !contestData) {
     return (
       <div className="p-10 text-center text-gray-500 font-semibold">

@@ -64,7 +64,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
         {/* LEFT */}
         <div className="flex items-center gap-3">
-          <Link to="/" className="w-28 sm:w-32 md:w-46">
+          <Link to="/" className="w-28 sm:w-32 md:w-56">
             <img src={Desunlogo} alt="logo" />
           </Link>
         </div>
