@@ -87,29 +87,6 @@ const Header = () => {
           })}
         </nav>
 
-        {/* SEARCH */}
-        <div
-          className={`hidden md:flex items-center bg-gray-100 rounded-full px-3 py-1 transition-all duration-300 ${
-            searchActive ? "w-64" : "w-36"
-          }`}
-        >
-          <input
-            type="text"
-            placeholder="Search"
-            className="bg-transparent outline-none text-sm w-full"
-            value={search}
-            onFocus={() => setSearchActive(true)}
-            onBlur={() => setSearchActive(false)}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-
-          {searchActive && (
-            <button onClick={handleSearch} className="text-gray-600">
-              <FaSearch />
-            </button>
-          )}
-        </div>
-
         {/* RIGHT */}
         <div className="flex items-center gap-3">
           {/* Desktop */}
@@ -200,16 +177,6 @@ const Header = () => {
           <NavLink to="/contact" onClick={() => setMenuOpen(false)}>
             Contact
           </NavLink>
-
-          {/* SEARCH */}
-          <div className="flex items-center bg-gray-100 rounded-full px-3 py-2 mt-3">
-            <input
-              type="text"
-              placeholder="Search"
-              className="bg-transparent outline-none w-full text-sm"
-            />
-            <FaSearch />
-          </div>
 
           {/* USER ACTION */}
           {isLoggedIn ? (

@@ -2,18 +2,15 @@ import React, { lazy, Suspense } from "react";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
-// 🔥 Lazy components
+// Lazy components
 const HeroSection = lazy(() => import("../components/HeroSection/HeroSection"));
 const ContestCard = lazy(() => import("../components/Card/ContestCard"));
 
 function HomeUI({ contests, loading, error, handleExplore }) {
-  // Animation variants
   const container = {
     hidden: {},
     show: {
-      transition: {
-        staggerChildren: 0.1,
-      },
+      transition: { staggerChildren: 0.1 },
     },
   };
 
@@ -37,7 +34,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
 
       <button
         onClick={handleExplore}
-        className={`group flex items-center gap-2 px-6 py-3 rounded-full font-semibold border backdrop-blur-md ${colorClass}`}
+        className={`group flex items-center gap-2 px-6 py-3 rounded-full font-semibold backdrop-blur-md focus:outline-none ${colorClass}`}
       >
         View All
         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -75,14 +72,18 @@ function HomeUI({ contests, loading, error, handleExplore }) {
                 <motion.div
                   key={contest._id}
                   variants={card}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="group relative rounded-[28px] border bg-white/70 backdrop-blur-lg shadow-sm hover:shadow-xl"
+                  whileHover={{ y: -6, scale: 1.015 }}
+                  transition={{ duration: 0.3 }}
+                  className="group relative rounded-[28px] bg-white/50 backdrop-blur-xl transition-all duration-300"
                 >
-                  <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-indigo-100/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+                  {/* hover glow only (no border) */}
+                  <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-indigo-100/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
 
-                  <Suspense fallback={<div className="p-6">Loading...</div>}>
-                    <ContestCard contest={contest} />
-                  </Suspense>
+                  <div className="relative">
+                    <Suspense fallback={<div className="p-6">Loading...</div>}>
+                      <ContestCard contest={contest} />
+                    </Suspense>
+                  </div>
                 </motion.div>
               ))}
           </motion.div>
@@ -93,7 +94,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
           <SectionHeader
             title="Upcoming Challenges"
             subtitle="Mark your calendar for these events"
-            colorClass="bg-white/80 text-slate-700 border-slate-200 hover:bg-white shadow-md"
+            colorClass="bg-white/60 text-slate-700 hover:bg-white/80"
           />
 
           <motion.div
@@ -109,14 +110,17 @@ function HomeUI({ contests, loading, error, handleExplore }) {
                 <motion.div
                   key={contest._id}
                   variants={card}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="group relative rounded-[28px] border bg-white/70 backdrop-blur-lg shadow-sm hover:shadow-xl"
+                  whileHover={{ y: -6, scale: 1.015 }}
+                  transition={{ duration: 0.3 }}
+                  className="group relative rounded-[28px] bg-white/50 backdrop-blur-xl transition-all duration-300"
                 >
-                  <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-green-100/40 to-transparent opacity-0 group-hover:opacity-100 transition"></div>
+                  <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-green-100/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
 
-                  <Suspense fallback={<div className="p-6">Loading...</div>}>
-                    <ContestCard contest={contest} />
-                  </Suspense>
+                  <div className="relative">
+                    <Suspense fallback={<div className="p-6">Loading...</div>}>
+                      <ContestCard contest={contest} />
+                    </Suspense>
+                  </div>
                 </motion.div>
               ))}
           </motion.div>
@@ -127,7 +131,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            className="text-center py-24 border border-dashed rounded-3xl bg-white/60 backdrop-blur"
+            className="text-center py-24 rounded-3xl bg-white/40 backdrop-blur-xl"
           >
             <p className="text-slate-400 text-lg">
               No contests available at the moment.
