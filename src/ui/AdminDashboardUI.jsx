@@ -15,25 +15,6 @@ export default function AdminDashboardUI({
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100">
       <div className="flex-1 flex flex-col">
-        {/* 🔷 HEADER */}
-        <header className="h-16 bg-white/70 backdrop-blur-md border-b shadow-sm flex items-center justify-between px-6 sticky top-0 z-10">
-          <div className="flex items-center gap-3">
-            <button onClick={() => setSidebarOpen(true)}>
-              <Menu />
-            </button>
-            <h1 className="text-xl font-bold text-gray-800">Admin Dashboard</h1>
-          </div>
-
-          <div className="hidden md:flex items-center bg-gray-100 px-3 py-2 rounded-xl w-1/3">
-            <Search size={16} className="text-gray-500" />
-            <input
-              type="text"
-              placeholder="Search contests..."
-              className="bg-transparent outline-none ml-2 w-full text-sm"
-            />
-          </div>
-        </header>
-
         {/* 🔷 MAIN */}
         <main className="p-6 space-y-8">
           {/* ✅ STATS */}

@@ -10,7 +10,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../features/authSlice/authSlice";
 import { useState } from "react";
-import Button from "../Button/Button";
+import { motion, AnimatePresence } from "framer-motion";
 import { FaSignOutAlt } from "react-icons/fa";
 
 function Sidebar({ open, setOpen }) {
@@ -18,10 +18,14 @@ function Sidebar({ open, setOpen }) {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const [collapsed, setCollapsed] = useState(false);
-  const [profileOpen, setProfileOpen] = useState(false);
-
   const { user } = useSelector((state) => state.auth);
+
+  // 🔥 STATE
+  const [collapsed, setCollapsed] = useState(true); // default collapsed
+  const [hovered, setHovered] = useState(false);
+
+  // 👉 FINAL WIDTH LOGIC
+  const isExpanded = !collapsed || hovered;
 
   const menuItems = [
     { name: "Dashboard", path: "/admin/dashboard", icon: Home },
@@ -36,39 +40,63 @@ function Sidebar({ open, setOpen }) {
 
   return (
     <>
-      {/* Overlay (mobile) */}
-      {open && (
-        <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
-          onClick={() => setOpen(false)}
-        />
-      )}
+      {/* 🔥 MOBILE OVERLAY */}
+      <AnimatePresence>
+        {open && (
+          <motion.div
+            className="fixed inset-0 bg-black/50 z-40 md:hidden"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setOpen(false)}
+          />
+        )}
+      </AnimatePresence>
 
-      {/* Sidebar */}
-      <aside
-        className={`fixed top-0 left-0 h-screen ${
-          collapsed ? "w-20" : "w-64"
-        } bg-gradient-to-b from-gray-900 to-gray-950 text-white z-50 transition-all duration-300 shadow-xl
-        ${open ? "translate-x-0" : "-translate-x-full"}
-        md:translate-x-0 md:static`}
+      {/* 🔥 SIDEBAR */}
+      <motion.aside
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
+        animate={{ width: isExpanded ? 260 : 80 }}
+        transition={{ type: "spring", stiffness: 200, damping: 20 }}
+        className={`
+          h-screen text-white shadow-2xl
+          bg-gradient-to-b from-gray-900 via-gray-950 to-black
+          border-r border-gray-800
+          
+          hidden md:flex flex-col sticky top-0
+          
+          fixed top-0 left-0 z-50 flex-col
+          ${open ? "translate-x-0" : "-translate-x-full"}
+          transition-transform duration-300 md:translate-x-0
+        `}
+        style={{ boxShadow: "0 0 40px rgba(0,0,0,0.6)" }}
       >
         <div className="flex flex-col h-full p-4">
-          {/* Header */}
+          {/* 🔷 HEADER */}
           <div className="flex justify-between items-center mb-8">
-            {!collapsed && <h2 className="text-lg font-bold">Admin Panel</h2>}
+            {isExpanded && (
+              <motion.h2
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                className="text-lg font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"
+              >
+                Admin Panel
+              </motion.h2>
+            )}
 
-            <div className="flex items-center gap-2">
-              {/* Collapse Button */}
+            <div className="flex gap-2">
+              {/* Manual toggle */}
               <button
                 onClick={() => setCollapsed(!collapsed)}
-                className="p-1 hover:bg-gray-700 rounded"
+                className="p-1 hover:bg-gray-800 rounded"
               >
                 {collapsed ? <ChevronRight /> : <ChevronLeft />}
               </button>
 
-              {/* Close (mobile) */}
+              {/* Mobile close */}
               <button
-                className="md:hidden p-1 hover:bg-gray-700 rounded"
+                className="md:hidden p-1 hover:bg-gray-800 rounded"
                 onClick={() => setOpen(false)}
               >
                 <X size={20} />
@@ -76,8 +104,8 @@ function Sidebar({ open, setOpen }) {
             </div>
           </div>
 
-          {/* Menu */}
-          <nav className="flex flex-col gap-2">
+          {/* 🔷 MENU */}
+          <nav className="flex flex-col gap-2 flex-1 overflow-y-auto">
             {menuItems.map((item) => {
               const Icon = item.icon;
               const isActive = location.pathname === item.path;
@@ -87,23 +115,29 @@ function Sidebar({ open, setOpen }) {
                   key={item.name}
                   to={item.path}
                   onClick={() => setOpen(false)}
-                  className={`group flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all
+                  className={`group relative flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-300
                   ${
                     isActive
-                      ? "bg-indigo-600"
-                      : "hover:bg-gray-800 text-gray-300 hover:text-white"
+                      ? "bg-gradient-to-r from-indigo-600 to-purple-600 shadow-lg shadow-indigo-500/20"
+                      : "hover:bg-gray-800 text-gray-400 hover:text-white"
                   }`}
                 >
-                  <Icon size={20} />
+                  <Icon size={20} className="opacity-90" />
 
-                  {/* Text (hidden when collapsed) */}
-                  {!collapsed && (
-                    <span className="text-sm font-medium">{item.name}</span>
+                  {/* TEXT */}
+                  {isExpanded && (
+                    <motion.span
+                      initial={{ opacity: 0, x: -10 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      className="text-sm"
+                    >
+                      {item.name}
+                    </motion.span>
                   )}
 
-                  {/* Tooltip (when collapsed) */}
-                  {collapsed && (
-                    <span className="absolute left-20 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
+                  {/* TOOLTIP */}
+                  {!isExpanded && (
+                    <span className="absolute left-16 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
                       {item.name}
                     </span>
                   )}
@@ -112,32 +146,29 @@ function Sidebar({ open, setOpen }) {
             })}
           </nav>
 
-          {/* Profile Section */}
+          {/* 🔷 PROFILE */}
           <div className="mt-auto">
-            <div className="bg-gray-800/80 backdrop-blur rounded-xl p-3 w-full">
-              {/* User Info */}
+            <div className="bg-gray-900 border border-gray-800 rounded-xl p-3 shadow-inner">
               <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 rounded-full bg-indigo-500 flex items-center justify-center font-bold text-white">
-                  {user?.userName?.charAt(0).toUpperCase() || "A"}
-                </div>
+                <img
+                  src={`https://ui-avatars.com/api/?name=${user?.userName || "Admin"}`}
+                  className="w-10 h-10 rounded-full"
+                />
 
-                {!collapsed && (
-                  <div className="overflow-hidden">
-                    <p className="text-sm font-semibold truncate">
+                {isExpanded && (
+                  <div>
+                    <p className="text-sm font-semibold">
                       {user?.userName || "Admin"}
                     </p>
-                    <p className="text-xs text-gray-400 truncate">
-                      {user?.email || "admin@email.com"}
-                    </p>
+                    <p className="text-xs text-gray-400">{user?.email}</p>
                   </div>
                 )}
               </div>
 
-              {/* Logout Button FULL WIDTH */}
-              {!collapsed && (
+              {isExpanded && (
                 <button
                   onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2.5 rounded-lg transition-all"
+                  className="w-full flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white text-sm py-2 rounded-lg transition-all"
                 >
                   <FaSignOutAlt />
                   Logout
@@ -146,7 +177,7 @@ function Sidebar({ open, setOpen }) {
             </div>
           </div>
         </div>
-      </aside>
+      </motion.aside>
     </>
   );
 }
