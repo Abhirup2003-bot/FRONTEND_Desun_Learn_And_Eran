@@ -7,18 +7,18 @@ export default function AdminDashboard() {
   const dispatch = useDispatch();
 
   const { contests, loading } = useSelector((state) => state.contest);
-  const { token } = useSelector((state) => state.auth); // ✅ TOKEN
+  const { token } = useSelector((state) => state.auth);
 
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [participantsData, setParticipantsData] = useState({});
   const [participantsLoading, setParticipantsLoading] = useState(false);
 
-  // ✅ FETCH CONTESTS
+  // FETCH CONTESTS
   useEffect(() => {
     dispatch(getContest());
   }, [dispatch]);
 
-  // ✅ FETCH PARTICIPANTS
+  // FETCH PARTICIPANTS
   useEffect(() => {
     if (!contests?.length || !token) return;
 
@@ -28,28 +28,31 @@ export default function AdminDashboard() {
 
         const BASE_URL = "https://backend-ly6h.onrender.com/app/v1/Admin";
 
-        const requests = contests.map((contest) => {
-          return fetch(`${BASE_URL}/contest/${contest._id}`, {
+        const requests = contests.map((contest) =>
+          fetch(`${BASE_URL}/contest/${contest._id}`, {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${token}`, // ✅ FIXED
+              Authorization: `Bearer ${token}`,
             },
           })
             .then((res) => res.json())
-            .then((data) => {
-              return data;
+            .then((res) => {
+              console.log("Contest API response", contest._id, res);
+              // Adjust this if API structure changes
+              return res?.data?.data || res?.data || [];
             })
-            .catch(() => ({ data: [] }));
-        });
+            .catch(() => []),
+        );
 
         const responses = await Promise.all(requests);
 
         const mapped = {};
         contests.forEach((contest, index) => {
-          mapped[contest._id] = responses[index]?.data || [];
+          mapped[contest._id] = responses[index] || [];
         });
 
+        console.log("Mapped participantsData:", mapped);
         setParticipantsData(mapped);
       } catch (err) {
         console.error("Participant fetch error", err);
@@ -61,8 +64,7 @@ export default function AdminDashboard() {
     fetchParticipants();
   }, [contests, token]);
 
-  // ✅ METRICS (🔥 FIXED LOGIC)
-
+  // METRICS
   const totalContests = contests?.length || 0;
 
   const totalTeamParticipants = contests.reduce((acc, contest) => {

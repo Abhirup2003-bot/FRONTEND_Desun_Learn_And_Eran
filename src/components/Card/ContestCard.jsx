@@ -27,7 +27,7 @@ const ContestCard = ({ contest }) => {
   return (
     <div className="group relative bg-white border border-slate-200/60 rounded-[32px] p-3 pb-6 transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:shadow-[0_20px_50px_rgba(0,0,0,0.1)] hover:-translate-y-2 overflow-hidden flex flex-col h-full">
       {/* --- Image Section --- */}
-      <div className="relative h-48 w-full overflow-hidden rounded-[24px] z-0">
+      <div className="relative h-58 w-full overflow-hidden rounded-[24px] z-0">
         <img
           src={contest.image || defaultImage}
           alt={contest.title}

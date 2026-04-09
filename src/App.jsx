@@ -15,7 +15,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AdminContestPage from "./pages/AdminContestPage";
 import ContestDetailsPage from "./pages/ContestDetailsPage";
 import AdminUsersPage from "./pages/AdminUserPage";
-import TeamContestPage from "./pages/TeamContestPage";
+
 import SubmitProjectPage from "./pages/SubmitProjectPage";
 import ProfilePage from "./pages/ProfilePage";
 
@@ -37,7 +37,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/contest/:id" element={<ContestDetailsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/team-contest/:id" element={<TeamContestPage />} />
+
           <Route path="/submit-project/:id" element={<SubmitProjectPage />} />
         </Route>
 

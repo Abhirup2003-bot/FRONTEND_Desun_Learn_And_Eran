@@ -13,8 +13,10 @@ const ContestDetailsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  // ✅ Always read token dynamically from Redux
   const authState = useSelector((state) => state.auth);
-  const token = authState?.token || authState?.user?.token;
+  const token = authState?.token;
+  const isLoggedIn = authState?.isLoggedIn;
 
   const {
     contests = [],
@@ -34,34 +36,21 @@ const ContestDetailsPage = () => {
   }, [contests, id]);
 
   /* ================= PARTICIPATE ================= */
-  const handleParticipate = () => {
-    if (!token) {
+  const handleParticipate = async () => {
+    if (!isLoggedIn || !token) {
       alert("Please login first");
       return;
     }
 
-    const type = contestData?.participationType?.toLowerCase() || "solo";
+    if (!contestData) return;
 
-    if (type === "team") {
-      navigate(`/team-contest/${contestData._id}`);
-    } else {
-      dispatch(
-        participateInContest({
-          contestId: contestData._id,
-          token,
-        }),
-      );
-    }
-  };
-
-  /* ================= SUBMIT ================= */
-  const handleSubmitProject = () => {
-    if (!token) {
-      alert("Please login first");
-      return;
-    }
-
-    navigate(`/submit-project/${contestData._id}`);
+    // 🔥 Dispatch participation
+    dispatch(
+      participateInContest({
+        contestId: contestData._id,
+        token,
+      }),
+    );
   };
 
   /* ================= ALERTS ================= */

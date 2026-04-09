@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Search, Menu, Trophy, Users, FileText, Clock, X } from "lucide-react";
+import { Trophy, Users, FileText, Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function AdminDashboardUI({
@@ -15,9 +15,8 @@ export default function AdminDashboardUI({
   return (
     <div className="flex min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100">
       <div className="flex-1 flex flex-col">
-        {/* 🔷 MAIN */}
         <main className="p-6 space-y-8">
-          {/* ✅ STATS */}
+          {/* STATS */}
           <div className="grid md:grid-cols-5 gap-6">
             <StatCard
               label="Contests"
@@ -46,7 +45,7 @@ export default function AdminDashboardUI({
             />
           </div>
 
-          {/* ✅ CONTEST LIST */}
+          {/* CONTEST LIST */}
           {loading ? (
             <p className="text-gray-500 animate-pulse">Loading...</p>
           ) : (
@@ -72,15 +71,12 @@ export default function AdminDashboardUI({
 
                   <div className="p-5 space-y-2">
                     <h3 className="font-bold text-lg">{contest.title}</h3>
-
                     <p className="text-xs text-gray-500">{contest.type}</p>
-
                     <div className="flex justify-between">
                       <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded-full">
                         {contest.participationType ||
                           (contest.maxTeamSize > 1 ? "Team" : "Solo")}
                       </span>
-
                       <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
                         👥 {participantsData[contest._id]?.length || 0}
                       </span>
@@ -93,7 +89,7 @@ export default function AdminDashboardUI({
         </main>
       </div>
 
-      {/* 🔥 MODAL */}
+      {/* MODAL */}
       <AnimatePresence>
         {selectedContest && (
           <motion.div
@@ -109,7 +105,6 @@ export default function AdminDashboardUI({
               transition={{ type: "spring", stiffness: 120 }}
               className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative"
             >
-              {/* CLOSE */}
               <button
                 onClick={() => setSelectedContest(null)}
                 className="absolute top-4 right-4 text-gray-500 hover:text-black"
@@ -125,35 +120,30 @@ export default function AdminDashboardUI({
                 {(participantsData[selectedContest._id] || []).length === 0 ? (
                   <p className="text-gray-500 text-sm">No participants yet</p>
                 ) : (
-                  participantsData[selectedContest._id].map((p, index) => (
-                    <motion.div
-                      key={p._id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: index * 0.05 }}
-                      className="flex items-center gap-3 bg-gray-100 px-4 py-2 rounded-lg"
-                    >
-                      {/* 🧑 AVATAR */}
-                      <img
-                        src={
-                          p.user?.avatar ||
-                          `https://ui-avatars.com/api/?name=${p.user?.name || "User"}`
-                        }
-                        alt="avatar"
-                        className="w-8 h-8 rounded-full"
-                      />
-
-                      {/* 👤 NAME */}
-                      <div className="flex flex-col">
+                  participantsData[selectedContest._id].map((p, index) => {
+                    const user = p.user || {};
+                    return (
+                      <motion.div
+                        key={user._id || index}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: index * 0.05 }}
+                        className="flex flex-col gap-1 bg-gray-100 px-4 py-2 rounded-lg"
+                      >
                         <span className="text-sm font-medium">
-                          {p.user?.name || "Unknown User"}
+                          👤 {user.userName || "Unknown User"}
                         </span>
                         <span className="text-xs text-gray-500">
-                          {p.user?.email || ""}
+                          📧 {user.email || "No Email"}
                         </span>
-                      </div>
-                    </motion.div>
-                  ))
+                        {p.teamName && (
+                          <span className="text-xs text-indigo-600">
+                            🏷️ Team: {p.teamName}
+                          </span>
+                        )}
+                      </motion.div>
+                    );
+                  })
                 )}
               </div>
             </motion.div>
@@ -164,7 +154,7 @@ export default function AdminDashboardUI({
   );
 }
 
-/* 🔷 STAT CARD */
+/* STAT CARD */
 function StatCard({ label, value, icon }) {
   return (
     <motion.div

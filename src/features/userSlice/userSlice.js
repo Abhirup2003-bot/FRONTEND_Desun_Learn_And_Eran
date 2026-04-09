@@ -54,7 +54,6 @@ export const deleteUser = createAsyncThunk(
       });
 
       const data = await res.json();
-      console.log("DELETE RESPONSE:", data);
 
       if (!res.ok) {
         return rejectWithValue(data.message || data.msg || "Delete failed");

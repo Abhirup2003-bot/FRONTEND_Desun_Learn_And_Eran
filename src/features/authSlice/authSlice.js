@@ -3,6 +3,22 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 // ================= LOAD FROM LOCAL STORAGE =================
 const savedAuth = JSON.parse(localStorage.getItem("auth"));
 
+// 🔥 SAFE TOKEN EXTRACTOR (NEW)
+const extractAuthData = (payload) => {
+  const userData =
+    payload?.data?.user || payload?.user || payload?.data || null;
+
+  const token =
+    payload?.accessToken ||
+    payload?.token ||
+    payload?.data?.token ||
+    payload?.data?.accessToken ||
+    payload?.user?.token || // 🔥 added: in case token is inside user
+    null;
+
+  return { userData, token };
+};
+
 // ================= LOGIN =================
 export const loginUser = createAsyncThunk(
   "auth/loginUser",
@@ -134,13 +150,13 @@ const authSlice = createSlice({
         state.loading = false;
         state.isLoggedIn = true;
 
-        const userData = action.payload?.data || action.payload?.user || null;
-
-        const token =
-          action.payload?.accessToken || action.payload?.token || null;
+        // 🔥 USE SAFE EXTRACTOR
+        const { userData, token } = extractAuthData(action.payload);
 
         state.user = userData;
         state.token = token;
+
+        // 🔥 DEBUG (helps catch future bugs)
 
         // ✅ SAVE TO LOCAL STORAGE
         localStorage.setItem(
@@ -157,7 +173,7 @@ const authSlice = createSlice({
         state.error = action.payload;
       })
 
-      // ================= REGISTER (🔥 FIXED) =================
+      // ================= REGISTER =================
       .addCase(registerUser.pending, (state) => {
         state.loading = true;
         state.error = null;
@@ -165,15 +181,14 @@ const authSlice = createSlice({
       .addCase(registerUser.fulfilled, (state, action) => {
         state.loading = false;
 
-        // ✅ SAME LOGIC AS LOGIN
-        const userData = action.payload?.data || action.payload?.user || null;
-
-        const token =
-          action.payload?.accessToken || action.payload?.token || null;
+        // 🔥 SAME SAFE EXTRACTION
+        const { userData, token } = extractAuthData(action.payload);
 
         state.isLoggedIn = true;
         state.user = userData;
         state.token = token;
+
+        console.log("REGISTER TOKEN:", token);
 
         // ✅ SAVE TO LOCAL STORAGE
         localStorage.setItem(
@@ -200,7 +215,6 @@ const authSlice = createSlice({
         state.user = null;
         state.token = null;
 
-        // ✅ CLEAR STORAGE
         localStorage.removeItem("auth");
       })
       .addCase(logoutUser.rejected, (state, action) => {
