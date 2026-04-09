@@ -13,10 +13,8 @@ const ContestDetailsPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  // ✅ Always read token dynamically from Redux
   const authState = useSelector((state) => state.auth);
-  const token = authState?.token;
-  const isLoggedIn = authState?.isLoggedIn;
+  const token = authState?.token || authState?.user?.token;
 
   const {
     contests = [],
@@ -36,21 +34,61 @@ const ContestDetailsPage = () => {
   }, [contests, id]);
 
   /* ================= PARTICIPATE ================= */
-  const handleParticipate = async () => {
-    if (!isLoggedIn || !token) {
+  const handleParticipate = async (teamData = null) => {
+    if (!token) {
       alert("Please login first");
       return;
     }
 
-    if (!contestData) return;
+    const type = contestData?.participationType?.toLowerCase() || "solo";
 
-    // 🔥 Dispatch participation
-    dispatch(
-      participateInContest({
-        contestId: contestData._id,
-        token,
-      }),
-    );
+    try {
+      let teamId = null;
+
+      if (type === "team") {
+        if (!teamData) {
+          alert("This contest requires a team. Redirecting to team creation.");
+          return;
+        }
+
+        // CREATE TEAM
+        const teamRes = await fetch(
+          "https://backend-ly6h.onrender.com/app/v1/Learn/team-making",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({
+              name: teamData.teamName,
+              members: teamData.members,
+            }),
+          },
+        );
+
+        const teamDataRes = await teamRes.json();
+
+        if (!teamRes.ok) {
+          alert(teamDataRes.msg || "Team creation failed");
+          return;
+        }
+
+        teamId = teamDataRes.data._id;
+      }
+
+      // PARTICIPATE IN CONTEST
+      await dispatch(
+        participateInContest({
+          contestId: contestData._id,
+          token,
+          teamId,
+        }),
+      ).unwrap();
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
   };
 
   /* ================= ALERTS ================= */

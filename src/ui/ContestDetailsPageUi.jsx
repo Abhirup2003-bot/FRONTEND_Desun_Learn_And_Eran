@@ -1,5 +1,5 @@
 import React from "react";
-import { Calendar, Clock, Users, Trophy } from "lucide-react";
+import { Calendar, Clock, Users } from "lucide-react";
 
 const ContestDetailsPageUi = ({
   data,
@@ -22,80 +22,70 @@ const ContestDetailsPageUi = ({
     isParticipated,
   } = data;
 
+  const [showModal, setShowModal] = React.useState(false);
+  const [teamName, setTeamName] = React.useState("");
+  const [members, setMembers] = React.useState("");
+
   const hasParticipated = Boolean(isParticipated);
   const isOngoing = (type || "").toLowerCase() === "ongoing";
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
-      <div className="max-w-6xl mx-auto px-4 py-10 space-y-8">
-        {/* IMAGE */}
+      <div className="max-w-6xl mx-auto px-4 py-10">
         {image && (
-          <div className="w-full h-[400px] rounded-3xl overflow-hidden shadow-2xl border border-gray-200">
+          <div className="w-full h-[400px] rounded-3xl overflow-hidden mb-8 shadow-xl">
             <img
               src={image}
               alt="contest"
-              className="w-full h-full object-cover transform hover:scale-105 transition duration-500"
+              className="w-full h-full object-cover"
             />
           </div>
         )}
 
-        {/* TAGS */}
-        <div className="flex flex-wrap gap-3">
+        <div className="flex gap-3 mb-4">
           {type && (
-            <span className="bg-indigo-500 text-white px-4 py-1 rounded-full text-xs font-semibold shadow">
+            <span className="bg-indigo-500 text-white px-3 py-1 rounded-full text-xs">
               {type}
             </span>
           )}
-
-          <span className="bg-green-100 text-green-800 px-4 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow">
+          <span className="bg-green-100 text-green-800 px-3 py-1 rounded-full text-xs flex items-center gap-1">
             <Users size={12} />
             {participationType}
           </span>
-
           {hasParticipated && (
-            <span className="bg-green-500 text-white px-4 py-1 rounded-full text-xs font-semibold shadow">
+            <span className="bg-green-500 text-white px-3 py-1 rounded-full text-xs">
               Joined
             </span>
           )}
         </div>
 
-        {/* TITLE */}
-        <h1 className="text-4xl font-extrabold text-gray-900">{title}</h1>
+        <h1 className="text-4xl font-bold mb-6">{title}</h1>
 
-        {/* DATES */}
-        <div className="flex flex-wrap gap-8 border-b pb-6 text-gray-700">
+        <div className="flex gap-8 mb-8 border-b pb-6">
           {startingDate && (
             <div className="flex items-center gap-2">
-              <Calendar size={20} className="text-indigo-500" />
-              <span className="font-medium">{formatDate(startingDate)}</span>
+              <Calendar size={20} />
+              {formatDate(startingDate)}
             </div>
           )}
 
           {deadline && (
             <div className="flex items-center gap-2 text-red-500">
               <Clock size={20} />
-              <span className="font-medium">{formatDate(deadline)}</span>
-            </div>
-          )}
-
-          {prizes && (
-            <div className="flex items-center gap-2 text-yellow-600">
-              <Trophy size={20} />
-              <span className="font-bold">${prizes}</span>
+              {formatDate(deadline)}
             </div>
           )}
         </div>
 
-        {/* DESCRIPTION & BRIEF */}
-        {description && <p className="text-gray-600 text-lg">{description}</p>}
-        {brief && <p className="text-gray-500">{brief}</p>}
+        {description && <p className="mb-6 text-gray-600">{description}</p>}
+        {brief && <p className="mb-6 text-gray-600">{brief}</p>}
+        {prizes && <p className="font-bold text-lg mb-6">${prizes}</p>}
 
-        {/* BUTTONS */}
         <div className="max-w-md space-y-3">
           {hasParticipated && isOngoing && (
             <button
               onClick={onSubmitProject}
-              className="w-full px-6 py-3 rounded-2xl font-bold text-white text-lg bg-green-600 hover:bg-green-700 shadow-lg transition"
+              className="w-full px-6 py-3 rounded-xl font-bold text-white text-lg bg-green-600 hover:bg-green-700"
             >
               🚀 Submit Project
             </button>
@@ -103,12 +93,16 @@ const ContestDetailsPageUi = ({
 
           {!hasParticipated && (
             <button
-              onClick={onParticipate}
+              onClick={() => {
+                if ((participationType || "").toLowerCase() === "team") {
+                  setShowModal(true);
+                } else {
+                  onParticipate();
+                }
+              }}
               disabled={loading}
-              className={`w-full px-6 py-3 rounded-2xl font-bold text-white text-lg shadow-lg transition ${
-                loading
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-indigo-600 hover:bg-indigo-700"
+              className={`w-full px-6 py-3 rounded-xl font-bold text-white text-lg ${
+                loading ? "bg-gray-400" : "bg-indigo-600 hover:bg-indigo-700"
               }`}
             >
               {loading ? "Processing..." : "Participate Now"}
@@ -118,13 +112,75 @@ const ContestDetailsPageUi = ({
           {hasParticipated && !isOngoing && (
             <button
               disabled
-              className="w-full px-6 py-3 rounded-2xl font-bold text-white text-lg bg-gray-400 shadow"
+              className="w-full px-6 py-3 rounded-xl font-bold text-white text-lg bg-gray-400"
             >
               Contest not started yet
             </button>
           )}
         </div>
       </div>
+
+      {showModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white w-full max-w-md p-6 rounded-2xl shadow-xl space-y-4">
+            <h2 className="text-xl font-bold">Create Team</h2>
+
+            <input
+              type="text"
+              placeholder="Team Name"
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+              className="w-full border p-2 rounded"
+            />
+
+            <input
+              type="text"
+              placeholder="Emails (comma separated)"
+              value={members}
+              onChange={(e) => setMembers(e.target.value)}
+              className="w-full border p-2 rounded"
+            />
+
+            <div className="flex gap-3">
+              <button
+                onClick={async () => {
+                  if (!teamName.trim()) {
+                    alert("Team name required");
+                    return;
+                  }
+
+                  const membersArray = members
+                    .split(",")
+                    .map((m) => m.trim())
+                    .filter((m) => m);
+
+                  if (!membersArray.length) {
+                    alert("Add valid emails");
+                    return;
+                  }
+
+                  await onParticipate({
+                    teamName,
+                    members: membersArray,
+                  });
+
+                  setShowModal(false);
+                }}
+                className="flex-1 bg-indigo-600 text-white py-2 rounded"
+              >
+                Create & Join
+              </button>
+
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 bg-gray-300 py-2 rounded"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -132,9 +188,5 @@ const ContestDetailsPageUi = ({
 export default ContestDetailsPageUi;
 
 function formatDate(date) {
-  return new Date(date).toLocaleDateString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-  });
+  return new Date(date).toLocaleDateString();
 }

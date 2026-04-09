@@ -138,7 +138,7 @@ export default function AdminDashboardUI({
                         </span>
                         {p.teamName && (
                           <span className="text-xs text-indigo-600">
-                            🏷️ Team: {p.teamName}
+                            🏷️ Team: {p.team?.name}
                           </span>
                         )}
                       </motion.div>

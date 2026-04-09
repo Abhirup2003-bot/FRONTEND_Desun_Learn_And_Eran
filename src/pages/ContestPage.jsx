@@ -5,7 +5,7 @@ import { getContest } from "../features/contestSlice/contestSlice";
 // 🔥 Lazy load UI
 const ContestPageUI = lazy(() => import("../ui/ContestPageUI"));
 
-function ContestPageContainer() {
+function ContestPage() {
   const dispatch = useDispatch();
   const { contests, error, loading } = useSelector((state) => state.contest);
 
@@ -42,4 +42,4 @@ function ContestPageContainer() {
   );
 }
 
-export default ContestPageContainer;
+export default ContestPage;
