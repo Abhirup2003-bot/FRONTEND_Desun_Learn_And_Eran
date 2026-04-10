@@ -6,6 +6,7 @@ const ContestDetailsPageUi = ({
   onParticipate,
   onSubmitProject,
   loading,
+  hasParticipated,
 }) => {
   if (!data) return null;
 
@@ -18,21 +19,15 @@ const ContestDetailsPageUi = ({
     type,
     startingDate,
     prizes,
-    participationType = "Solo",
-    isParticipated,
+    participationType = "solo",
   } = data;
-  console.log("📊 PARTICIPATION TYPE:", participationType);
-  console.log("📊 IS PARTICIPATED:", isParticipated);
 
   const [showModal, setShowModal] = React.useState(false);
   const [teamName, setTeamName] = React.useState("");
   const [members, setMembers] = React.useState("");
 
-  const hasParticipated = Boolean(isParticipated);
-
-  console.log("📌 HAS PARTICIPATED:", hasParticipated);
-
   const isOngoing = (type || "").toLowerCase() === "ongoing";
+
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
       <div className="max-w-6xl mx-auto px-4 py-10">
@@ -86,11 +81,11 @@ const ContestDetailsPageUi = ({
           {hasParticipated && isOngoing && (
             <button
               onClick={() => {
-                const teamNameInput = prompt("Enter Team Name (if any)");
+                const team = prompt("Enter Team Name (if any)");
                 const github = prompt("GitHub Link");
                 const live = prompt("Live Link");
 
-                onSubmitProject(teamNameInput || "", github, live);
+                onSubmitProject(team || "", github, live);
               }}
               className="w-full px-6 py-3 rounded-xl font-bold text-white text-lg bg-green-600"
             >
@@ -101,10 +96,10 @@ const ContestDetailsPageUi = ({
           {!hasParticipated && (
             <button
               onClick={() => {
-                if (participationType?.toLowerCase() === "team") {
+                if (participationType?.trim()?.toLowerCase() === "team") {
                   setShowModal(true);
                 } else {
-                  onParticipate();
+                  onParticipate(null);
                 }
               }}
               disabled={loading}
@@ -116,7 +111,7 @@ const ContestDetailsPageUi = ({
         </div>
       </div>
 
-      {/* TEAM MODAL */}
+      {/* MODAL */}
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-md p-6 rounded-2xl space-y-4">
@@ -145,7 +140,7 @@ const ContestDetailsPageUi = ({
                     .filter(Boolean);
 
                   await onParticipate({
-                    teamName,
+                    name: teamName,
                     members: membersArray,
                   });
 

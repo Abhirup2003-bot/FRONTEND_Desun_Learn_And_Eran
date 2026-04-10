@@ -13,7 +13,9 @@ const ContestDetailsPage = () => {
   const dispatch = useDispatch();
 
   const authState = useSelector((state) => state.auth);
+
   const token = authState?.token || authState?.user?.token;
+  const userId = authState?.user?._id;
 
   const {
     contests = [],
@@ -32,58 +34,67 @@ const ContestDetailsPage = () => {
     return contests.find((c) => String(c._id) === String(id));
   }, [contests, id]);
 
-  /* ================= PARTICIPATION CHECK (FIXED) ================= */
-  const userId = authState?.user?._id;
+  /* ================= NORMALIZE TYPE ================= */
+  const participationType = useMemo(() => {
+    return contestData?.participationType
+      ? String(contestData.participationType).trim().toLowerCase()
+      : "solo";
+  }, [contestData]);
 
-  console.log("👤 USER ID:", userId);
-  console.log("📦 PARTICIPANTS RAW:", contestData?.participants);
-  console.log("👥 TEAMS RAW:", contestData?.teams);
-
+  /* ================= CHECK PARTICIPATION ================= */
   const hasParticipated = useMemo(() => {
     if (!contestData || !userId) return false;
 
     const participants = contestData?.participants || [];
     const teams = contestData?.teams || [];
 
-    // 🔥 FIX 1: handle both string + object participants
-    const isInParticipants = participants.some((p) => {
+    const inParticipants = participants.some((p) => {
       const pid = typeof p === "object" ? p?._id : p;
       return String(pid) === String(userId);
     });
 
-    // 🔥 FIX 2: handle team members properly
-    const isInTeam = teams.some((t) =>
+    const inTeams = teams.some((t) =>
       (t?.members || []).some((m) => {
         const mid = typeof m === "object" ? m?._id : m;
         return String(mid) === String(userId);
       }),
     );
 
-    const result = isInParticipants || isInTeam;
+    return inParticipants || inTeams;
+  }, [contestData, userId]);
 
-    console.log("🔥 FINAL HAS PARTICIPATED:", result);
-
-    return result;
-  }, [contests, id, authState?.user?._id]);
   /* ================= PARTICIPATE ================= */
   const handleParticipate = async (teamData = null) => {
+    console.log("🚀 ===== START PARTICIPATION =====");
+    console.log("📌 Contest ID:", contestData?._id);
+    console.log("📌 Type:", participationType);
+    console.log("👤 User ID:", userId);
+    console.log("📦 Team Data:", teamData);
+
     if (!token) {
       alert("Please login first");
       return;
     }
 
-    const type = contestData?.participationType?.toLowerCase() || "solo";
-
     try {
       let teamId = null;
 
-      if (type === "team") {
+      /* ================= TEAM FLOW ================= */
+      if (participationType === "team") {
         if (!teamData) {
           alert("This contest requires a team.");
           return;
         }
 
-        const teamRes = await fetch(
+        const teamPayload = {
+          name: teamData.name,
+          members: teamData.members,
+          createdTeamBy: userId,
+        };
+
+        console.log("📤 TEAM PAYLOAD:", teamPayload);
+
+        const res = await fetch(
           "https://backend-ly6h.onrender.com/app/v1/Learn/team-making",
           {
             method: "POST",
@@ -91,44 +102,55 @@ const ContestDetailsPage = () => {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-            body: JSON.stringify({
-              name: teamData.teamName,
-              members: teamData.members,
-            }),
+            body: JSON.stringify(teamPayload),
           },
         );
 
-        const teamDataRes = await teamRes.json();
+        const teamRes = await res.json();
+        console.log("📥 TEAM RESPONSE:", teamRes);
 
-        if (!teamRes.ok) {
-          alert(teamDataRes.msg || "Team creation failed");
+        if (!res.ok) {
+          alert(teamRes?.msg || "Team creation failed");
           return;
         }
 
-        teamId = teamDataRes.data._id;
+        teamId = teamRes?.data?._id;
+        console.log("✅ TEAM ID:", teamId);
       }
 
-      await dispatch(
-        participateInContest({
-          contestId: contestData._id,
-          token,
-          teamId,
-        }),
-      ).unwrap();
+      /* ================= JOIN CONTEST ================= */
+      const joinPayload = {
+        contestId: contestData._id,
+        token,
+        teamId: teamId, // ✅ FIXED
+      };
 
-      console.log("🔄 REFRESHING CONTEST AFTER JOIN...");
+      console.log("📤 JOIN PAYLOAD:", joinPayload);
+
+      const result = await dispatch(participateInContest(joinPayload)).unwrap();
+
+      console.log("📥 JOIN RESPONSE:", result);
 
       await dispatch(getContest());
+
+      console.log("✅ PARTICIPATION SUCCESS");
     } catch (err) {
-      console.error(err);
-      alert("Something went wrong");
+      console.log("🔥 ERROR:", err);
+
+      let msg = "Something went wrong";
+
+      if (typeof err === "string") msg = err;
+      else if (err?.msg) msg = err.msg;
+      else if (err?.message) msg = err.message;
+
+      alert(msg);
     }
   };
 
   /* ================= SUBMIT PROJECT ================= */
   const handleSubmitProject = async (teamName, githubLink, liveLink) => {
     try {
-      const isTeam = contestData?.participationType?.toLowerCase() === "team";
+      const isTeam = participationType === "team";
 
       const url = isTeam
         ? `https://backend-ly6h.onrender.com/app/v1/Learn/submit-project-as-team/${id}`
@@ -148,17 +170,15 @@ const ContestDetailsPage = () => {
       });
 
       const data = await res.json();
+
       if (!res.ok) {
         alert(data.msg || "Submission failed");
         return;
       }
 
       alert(data.msg || "Submitted successfully");
-
-      // 🔥 ADD THIS
       dispatch(getContest());
     } catch (err) {
-      console.error(err);
       alert("Something went wrong");
     }
   };
@@ -192,6 +212,7 @@ const ContestDetailsPage = () => {
       onParticipate={handleParticipate}
       onSubmitProject={handleSubmitProject}
       loading={loading}
+      hasParticipated={hasParticipated}
     />
   );
 };
