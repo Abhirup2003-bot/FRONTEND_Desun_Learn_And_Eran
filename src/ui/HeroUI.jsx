@@ -27,15 +27,15 @@ const HeroUI = ({
   return (
     <section className="w-full bg-gradient-to-br from-[#f8fafc] via-[#f1f5f9] to-[#eef2ff] overflow-hidden">
       <div className="relative">
-        {/* Background Glow */}
-        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-emerald-300 rounded-full blur-[140px] opacity-20"></div>
-        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-300 rounded-full blur-[140px] opacity-20"></div>
+        {/* ✅ FIX: pointer-events-none added */}
+        <div className="absolute top-0 left-0 w-[500px] h-[500px] bg-emerald-300 rounded-full blur-[140px] opacity-20 pointer-events-none"></div>
+        <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-indigo-300 rounded-full blur-[140px] opacity-20 pointer-events-none"></div>
 
         {/* Slider */}
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar"
+          className="flex overflow-x-auto snap-x snap-mandatory hide-scrollbar relative z-10"
         >
           {contests.map((contest, index) => (
             <div
@@ -43,30 +43,27 @@ const HeroUI = ({
               className="min-w-full snap-start flex items-center h-[80vh] md:h-[700px]"
             >
               <div className="container mx-auto px-6 md:px-20 grid md:grid-cols-2 gap-12 items-center">
-                {/* LEFT CONTENT */}
+                {/* LEFT */}
                 <div className="space-y-6">
-                  {/* Badge */}
                   <div className="inline-block px-4 py-1.5 text-xs font-semibold bg-emerald-100 text-emerald-700 rounded-full shadow-sm backdrop-blur">
                     Upcoming • Ends{" "}
                     {new Date(contest.deadline).toLocaleDateString()}
                   </div>
 
-                  {/* Title */}
                   <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight tracking-tight">
                     {contest.title}
                   </h1>
 
-                  {/* Description */}
                   <p className="text-gray-600 text-lg max-w-xl leading-relaxed">
                     {contest.description?.slice(0, 120) ||
-                      "Participate in this contest and showcase your skills with real-world challenges."}
+                      "Participate in this contest and showcase your skills."}
                   </p>
 
-                  {/* Buttons */}
                   <div className="flex flex-wrap gap-4">
+                    {/* ✅ BUTTON FIXED */}
                     <button
                       onClick={() => onJoinClick(contest._id)}
-                      className="px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
+                      className="relative z-20 px-8 py-3 rounded-xl bg-gradient-to-r from-emerald-500 to-green-600 text-white font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all duration-300"
                     >
                       Join Contest
                     </button>
@@ -77,7 +74,7 @@ const HeroUI = ({
                   </div>
                 </div>
 
-                {/* RIGHT IMAGE */}
+                {/* RIGHT */}
                 <div className="flex justify-center">
                   <div className="bg-white/70 backdrop-blur-xl rounded-3xl shadow-2xl p-6 border border-white/40 hover:scale-105 transition duration-500">
                     <img
@@ -93,7 +90,7 @@ const HeroUI = ({
         </div>
 
         {/* Pagination */}
-        <div className="absolute bottom-8 left-0 w-full flex justify-center gap-3">
+        <div className="absolute bottom-8 left-0 w-full flex justify-center gap-3 z-10">
           {contests.map((_, i) => (
             <button
               key={i}

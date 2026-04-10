@@ -7,7 +7,7 @@ const ContestCard = ({ contest }) => {
   const navigate = useNavigate();
 
   const handleExplore = () => {
-    navigate("/contest", { state: contest });
+    navigate(`/contest/${contest._id}`);
   };
 
   const formatDate = (dateString) => {

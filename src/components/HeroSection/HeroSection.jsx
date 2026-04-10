@@ -17,7 +17,6 @@ const HeroContainer = () => {
     if (contests.length === 0) dispatch(getContest());
   }, [dispatch, contests.length]);
 
-  // Filter only upcoming contests
   const upcomingContests = useMemo(() => {
     const now = new Date();
     return contests
@@ -25,7 +24,6 @@ const HeroContainer = () => {
       .slice(0, 5);
   }, [contests]);
 
-  // Auto-slide logic
   useEffect(() => {
     if (upcomingContests.length > 1) {
       const interval = setInterval(() => {
@@ -41,13 +39,12 @@ const HeroContainer = () => {
 
     const width = scrollRef.current.offsetWidth;
 
-    // ✅ detect last -> first jump
     const isLastToFirst =
       activeIndex === upcomingContests.length - 1 && index === 0;
 
     scrollRef.current.scrollTo({
       left: width * index,
-      behavior: isLastToFirst ? "auto" : "smooth", // 🔥 INSTANT JUMP
+      behavior: isLastToFirst ? "auto" : "smooth",
     });
 
     setActiveIndex(index);
@@ -62,6 +59,7 @@ const HeroContainer = () => {
     }
   };
 
+  // ✅ FIXED NAVIGATION
   const onJoinClick = (contestId) => {
     if (!user) {
       navigate("/login", { state: { from: window.location.pathname } });
