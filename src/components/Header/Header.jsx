@@ -71,8 +71,8 @@ const Header = () => {
 
         {/* CENTER NAV */}
         <nav className="hidden md:flex gap-3">
-          {["/", "/contest", "/contact"].map((path, i) => {
-            const labels = ["Home", "Contests", "Contact"];
+          {["/", "/contest", "/contact", "/my-contests"].map((path, i) => {
+            const labels = ["Home", "Contests", "Contact", "My Contests"];
             return (
               <NavLink
                 key={i}
