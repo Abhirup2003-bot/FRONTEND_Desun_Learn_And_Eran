@@ -38,7 +38,7 @@ export default function AdminDashboard() {
           })
             .then((res) => res.json())
             .then((res) => {
-              console.log("Contest API response", contest._id, res);
+              // console.log("Contest API response", contest._id, res);
               // Adjust this if API structure changes
               return res?.data?.data || res?.data || [];
             })
@@ -52,7 +52,6 @@ export default function AdminDashboard() {
           mapped[contest._id] = responses[index] || [];
         });
 
-        console.log("Mapped participantsData:", mapped);
         setParticipantsData(mapped);
       } catch (err) {
         console.error("Participant fetch error", err);

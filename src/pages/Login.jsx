@@ -8,7 +8,6 @@ import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../features/authSlice/authSlice";
-// import { forgetPassword } from "../features/authSlice/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -30,7 +29,6 @@ const Login = () => {
     if (loginUser.fulfilled.match(result)) {
       const role = result.payload.role;
 
-      // 🔥 CUSTOM ROLE-BASED TOAST
       if (role === "admin") {
         toast.success("👑 Welcome Admin! Login Successful");
         navigate("/admin/dashboard");
@@ -51,20 +49,6 @@ const Login = () => {
     if (name === "email") setEmail(value);
     if (name === "password") setPassword(value);
   };
-  // const handleForgetPassword = async () => {
-  //   if (!email) {
-  //     toast.error("Please enter your email first");
-  //     return;
-  //   }
-
-  //   const result = await dispatch(forgetPassword({ email }));
-
-  //   if (forgetPassword.fulfilled.match(result)) {
-  //     toast.success("📩 Reset link sent to your email");
-  //   } else {
-  //     toast.error(result.payload || "Something went wrong");
-  //   }
-  // };
 
   return (
     <>
@@ -133,7 +117,7 @@ const Login = () => {
             </div>
 
             {/* FORM */}
-            <div className="flex flex-col gap-5">
+            <form onSubmit={onClickHandler} className="flex flex-col gap-5">
               <InputField
                 label="Email Address"
                 type="email"
@@ -160,21 +144,19 @@ const Login = () => {
                   Remember me
                 </label>
 
-                <span
-                  // onClick={handleForgetPassword}
-                  className="text-[#82c600] cursor-pointer hover:underline"
-                >
+                <span className="text-[#82c600] cursor-pointer hover:underline">
                   Forgot password?
                 </span>
               </div>
 
               <Button
+                type="submit"
                 onClick={onClickHandler}
                 text={loading ? "Logging in..." : "Login"}
                 variant="success"
                 disabled={loading}
               />
-            </div>
+            </form>
 
             <p className="text-center text-sm text-gray-500 mt-6">
               Need access?{" "}
