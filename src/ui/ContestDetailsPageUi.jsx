@@ -27,6 +27,7 @@ const ContestDetailsPageUi = ({
   const [members, setMembers] = React.useState("");
 
   const isOngoing = (type || "").toLowerCase() === "ongoing";
+  const isTeam = participationType?.trim()?.toLowerCase() === "team";
 
   return (
     <div className="min-h-screen bg-gray-50 pb-20">
@@ -96,11 +97,7 @@ const ContestDetailsPageUi = ({
           {!hasParticipated && (
             <button
               onClick={() => {
-                if (participationType?.trim()?.toLowerCase() === "team") {
-                  setShowModal(true);
-                } else {
-                  onParticipate(null);
-                }
+                setShowModal(true); // ✅ ALWAYS OPEN MODAL
               }}
               disabled={loading}
               className="w-full px-6 py-3 rounded-xl font-bold text-white text-lg bg-indigo-600"
@@ -115,25 +112,36 @@ const ContestDetailsPageUi = ({
       {showModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white w-full max-w-md p-6 rounded-2xl space-y-4">
-            <h2 className="text-xl font-bold">Create Team</h2>
+            <h2 className="text-xl font-bold">
+              {isTeam ? "Create Team" : "Enter Your Name"}
+            </h2>
 
+            {/* TEAM NAME / USER NAME */}
             <input
               value={teamName}
               onChange={(e) => setTeamName(e.target.value)}
-              placeholder="Team Name"
+              placeholder={isTeam ? "Team Name" : "Your Name"}
               className="w-full border p-2 rounded"
             />
 
-            <input
-              value={members}
-              onChange={(e) => setMembers(e.target.value)}
-              placeholder="Emails comma separated"
-              className="w-full border p-2 rounded"
-            />
+            {/* MEMBERS ONLY FOR TEAM */}
+            {isTeam && (
+              <input
+                value={members}
+                onChange={(e) => setMembers(e.target.value)}
+                placeholder="Emails comma separated"
+                className="w-full border p-2 rounded"
+              />
+            )}
 
             <div className="flex gap-3">
               <button
                 onClick={async () => {
+                  if (!teamName.trim()) {
+                    alert("Name is required");
+                    return;
+                  }
+
                   const membersArray = members
                     .split(",")
                     .map((m) => m.trim())
@@ -141,14 +149,16 @@ const ContestDetailsPageUi = ({
 
                   await onParticipate({
                     name: teamName,
-                    members: membersArray,
+                    members: isTeam ? membersArray : [], // ✅ SOLO FIX
                   });
 
                   setShowModal(false);
+                  setTeamName("");
+                  setMembers("");
                 }}
                 className="flex-1 bg-indigo-600 text-white py-2 rounded"
               >
-                Create & Join
+                {isTeam ? "Create & Join" : "Join"}
               </button>
 
               <button
