@@ -64,7 +64,7 @@ const Header = () => {
       <div className="max-w-7xl mx-auto flex items-center justify-between px-4 py-3">
         {/* LEFT */}
         <div className="flex items-center gap-3">
-          <Link to="/" className="w-28 sm:w-32 md:w-56">
+          <Link to="/" className="w-36 sm:w-42 md:w-56">
             <img src={Desunlogo} alt="logo" />
           </Link>
         </div>
@@ -176,6 +176,9 @@ const Header = () => {
           </NavLink>
           <NavLink to="/contact" onClick={() => setMenuOpen(false)}>
             Contact
+          </NavLink>
+          <NavLink to="/my-contests" onClick={() => setMenuOpen(false)}>
+            My contests
           </NavLink>
 
           {/* USER ACTION */}

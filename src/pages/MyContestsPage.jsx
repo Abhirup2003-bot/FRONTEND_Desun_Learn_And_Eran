@@ -1,11 +1,17 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 
+const ITEMS_PER_LOAD = 6;
+
 const MyContestsPage = () => {
   const [contests, setContests] = useState([]);
+  const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
   const [loading, setLoading] = useState(false);
+  const [submittedMap, setSubmittedMap] = useState({});
+
+  const observerRef = useRef();
 
   const navigate = useNavigate();
 
@@ -29,20 +35,12 @@ const MyContestsPage = () => {
 
       const data = await res.json();
 
-      console.log("📥 MY CONTESTS:", data);
-
       if (!res.ok) {
         toast.error(data.msg || "Failed to load contests");
         return;
       }
 
       setContests(data.msg || []);
-
-      if ((data.msg || []).length === 0) {
-        toast.info("No contests participated yet");
-      } else {
-        toast.success("Contests loaded successfully 🚀");
-      }
     } catch (err) {
       console.error(err);
       toast.error("Something went wrong");
@@ -52,63 +50,119 @@ const MyContestsPage = () => {
   };
 
   useEffect(() => {
-    if (token) {
-      fetchMyContests();
-    }
+    if (token) fetchMyContests();
   }, [token]);
+
+  // 🔥 Lazy Load Observer
+  useEffect(() => {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        setVisibleCount((prev) => prev + ITEMS_PER_LOAD);
+      }
+    });
+
+    if (observerRef.current) {
+      observer.observe(observerRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, []);
 
   const handleNavigate = (id) => {
     navigate(`/submit-project/${id}`);
   };
 
+  const getStatusBadge = (contest) => {
+    if (contest?.isSubmitted) {
+      return (
+        <span className="text-xs font-medium text-green-600 bg-green-50 px-2 py-1 rounded-lg">
+          Submitted
+        </span>
+      );
+    }
+
+    return (
+      <span className="text-xs font-medium text-yellow-600 bg-yellow-50 px-2 py-1 rounded-lg">
+        Pending
+      </span>
+    );
+  };
+
   return (
-    <div className="min-h-screen p-6 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-6">My Contests</h1>
+    <div className="min-h-screen relative overflow-hidden px-6 py-12 bg-gradient-to-br from-gray-50 via-white to-gray-100">
+      <div className="max-w-7xl mx-auto mb-12">
+        <h1 className="text-4xl font-semibold text-gray-900">My Contests</h1>
+        <p className="text-gray-500 mt-1 text-sm">
+          Track and submit your projects
+        </p>
+      </div>
 
       {loading ? (
-        <p className="text-center">Loading...</p>
-      ) : contests.length === 0 ? (
-        <p className="text-center text-gray-500">
-          No contests participated yet
-        </p>
-      ) : (
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {contests.map((contest) => (
-            <div
-              key={contest._id}
-              onClick={() => handleNavigate(contest._id)}
-              className="bg-white rounded-xl shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition"
-            >
-              <img
-                src={contest.image}
-                alt={contest.title}
-                className="h-40 w-full object-cover"
-              />
-
-              <div className="p-4 space-y-2">
-                <h2 className="text-xl font-semibold">{contest.title}</h2>
-
-                <p className="text-gray-600 text-sm">{contest.description}</p>
-
-                <p className="text-sm text-blue-600">{contest.type}</p>
-
-                <p className="text-sm">
-                  Deadline: {new Date(contest.deadline).toLocaleDateString()}
-                </p>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation(); // 🔥 prevent card click double trigger
-                    handleNavigate(contest._id);
-                  }}
-                  className="w-full mt-3 bg-green-600 text-white py-2 rounded hover:bg-green-700"
-                >
-                  Submit Project
-                </button>
-              </div>
-            </div>
-          ))}
+        <div className="flex justify-center mt-20">
+          <div className="h-12 w-12 border-4 border-gray-200 border-t-green-500 rounded-full animate-spin"></div>
         </div>
+      ) : contests.length === 0 ? (
+        <div className="text-center mt-20 text-gray-500">
+          No contests participated yet
+        </div>
+      ) : (
+        <>
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {contests.slice(0, visibleCount).map((contest) => (
+              <div
+                key={contest._id}
+                onClick={() => handleNavigate(contest._id)}
+                className="group cursor-pointer rounded-3xl overflow-hidden bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl hover:shadow-2xl transition hover:-translate-y-2"
+              >
+                <div className="relative">
+                  <img
+                    src={contest.image}
+                    alt={contest.title}
+                    className="h-44 w-full object-cover group-hover:scale-110 transition duration-500"
+                  />
+
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
+
+                  <div className="absolute top-3 left-3 px-3 py-1 text-xs bg-white/80 rounded-full">
+                    {contest.type}
+                  </div>
+                </div>
+
+                <div className="p-5 space-y-3">
+                  <h2 className="text-lg font-semibold text-gray-900 line-clamp-1">
+                    {contest.title}
+                  </h2>
+
+                  <p className="text-sm text-gray-500 line-clamp-2">
+                    {contest.description}
+                  </p>
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs text-gray-400">
+                      {new Date(contest.deadline).toLocaleDateString()}
+                    </span>
+
+                    {/* 🎯 Dynamic Badge */}
+                    {getStatusBadge(contest)}
+                  </div>
+
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleNavigate(contest._id);
+                    }}
+                    className="w-full mt-2 py-2.5 rounded-xl text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-[0.97] transition"
+                  >
+                    Submit Project
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {/* 🔥 Observer Trigger */}
+          <div ref={observerRef} className="h-10"></div>
+        </>
       )}
     </div>
   );

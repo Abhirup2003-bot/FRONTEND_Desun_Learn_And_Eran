@@ -12,7 +12,7 @@ function AdminLayout() {
       <Sidebar open={open} setOpen={setOpen} />
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col md:ml-[80px]">
         {/* Topbar */}
         <div className="flex items-center justify-between bg-white shadow px-4 py-3">
           <button className="md:hidden" onClick={() => setOpen(true)}>

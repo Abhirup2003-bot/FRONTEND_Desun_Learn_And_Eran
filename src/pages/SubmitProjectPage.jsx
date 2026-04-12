@@ -10,7 +10,8 @@ const SubmitProjectPage = () => {
     useSelector((state) => state.auth?.token) ||
     useSelector((state) => state.auth?.user?.token);
 
-  const [teamId, setTeamId] = useState("");
+  // 🔥 renamed state
+  const [teamName, setTeamName] = useState("");
   const [githubLink, setGithubLink] = useState("");
   const [liveLink, setLiveLink] = useState("");
   const [loading, setLoading] = useState(false);
@@ -19,8 +20,8 @@ const SubmitProjectPage = () => {
   const [submittedData, setSubmittedData] = useState(null);
 
   const handleSubmitProject = async () => {
-    if (!teamId.trim()) {
-      toast.error("Team ID is required");
+    if (!teamName.trim()) {
+      toast.error("Team name is required");
       return;
     }
 
@@ -41,7 +42,7 @@ const SubmitProjectPage = () => {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            teamName: teamId,
+            teamName: teamName, // ✅ still same key (API expects this)
             githubLink: githubLink || "",
             liveLink,
           }),
@@ -50,13 +51,9 @@ const SubmitProjectPage = () => {
 
       const data = await res.json();
 
-      console.log("📥 RESPONSE:", data);
-
-      // 🔥 HANDLE ALREADY SUBMITTED
       if (data?.isSubmitted) {
         setAlreadySubmitted(true);
         setSubmittedData(data.data);
-
         toast.info("⚠️ Project already submitted");
         return;
       }
@@ -68,12 +65,10 @@ const SubmitProjectPage = () => {
 
       toast.success("🎉 Project Submitted Successfully!");
 
-      // Save submitted data
       setAlreadySubmitted(true);
       setSubmittedData(data.data);
 
-      // Reset form
-      setTeamId("");
+      setTeamName("");
       setGithubLink("");
       setLiveLink("");
     } catch (err) {
@@ -85,69 +80,76 @@ const SubmitProjectPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="w-full max-w-xl bg-white shadow-lg rounded-2xl p-6 space-y-5">
-        <h1 className="text-2xl font-bold text-center">Submit Project 🚀</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 via-white to-gray-100 p-4">
+      <div className="w-full max-w-xl backdrop-blur-xl bg-white/70 border border-gray-200 shadow-2xl rounded-3xl p-8 space-y-6">
+        <div className="text-center space-y-1">
+          <h1 className="text-3xl font-semibold tracking-tight text-gray-800">
+            Submit Project 🚀
+          </h1>
+          <p className="text-sm text-gray-500">
+            Share your work with the world
+          </p>
+        </div>
 
-        {/* 🔥 Already Submitted UI */}
         {alreadySubmitted && submittedData && (
-          <div className="bg-green-100 border border-green-400 text-green-700 p-3 rounded">
-            <p className="font-semibold">✅ Already Submitted</p>
-            <p className="text-sm mt-1">Live Link: {submittedData.liveLink}</p>
+          <div className="rounded-xl border border-green-300 bg-green-50 p-4">
+            <p className="font-semibold text-green-700">✅ Already Submitted</p>
+            <p className="text-sm text-green-600 mt-1 break-all">
+              Live: {submittedData.liveLink}
+            </p>
             {submittedData.githubLink && (
-              <p className="text-sm">GitHub: {submittedData.githubLink}</p>
+              <p className="text-sm text-green-600 break-all">
+                GitHub: {submittedData.githubLink}
+              </p>
             )}
           </div>
         )}
 
-        {/* Team ID */}
-        <div>
-          <label className="block text-sm font-medium mb-1">Team ID</label>
-          <input
-            type="text"
-            placeholder="Enter your Team ID (ObjectId)"
-            value={teamId}
-            onChange={(e) => setTeamId(e.target.value)}
-            disabled={alreadySubmitted}
-            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-200"
-          />
+        <div className="space-y-5">
+          {/* 🔥 Team Name instead of Team ID */}
+          <div className="space-y-1">
+            <label className="text-sm text-gray-600">Team Name</label>
+            <input
+              type="text"
+              placeholder="Enter your Team Name"
+              value={teamName}
+              onChange={(e) => setTeamName(e.target.value)}
+              disabled={alreadySubmitted}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white/80 focus:outline-none focus:ring-2 focus:ring-green-500 transition disabled:bg-gray-100"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm text-gray-600">
+              GitHub Link (Optional)
+            </label>
+            <input
+              type="text"
+              placeholder="https://github.com/your-project"
+              value={githubLink}
+              onChange={(e) => setGithubLink(e.target.value)}
+              disabled={alreadySubmitted}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white/80 focus:outline-none focus:ring-2 focus:ring-green-500 transition disabled:bg-gray-100"
+            />
+          </div>
+
+          <div className="space-y-1">
+            <label className="text-sm text-gray-600">Live Project Link *</label>
+            <input
+              type="text"
+              placeholder="https://your-live-app.com"
+              value={liveLink}
+              onChange={(e) => setLiveLink(e.target.value)}
+              disabled={alreadySubmitted}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 bg-white/80 focus:outline-none focus:ring-2 focus:ring-green-500 transition disabled:bg-gray-100"
+            />
+          </div>
         </div>
 
-        {/* GitHub */}
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            GitHub Link (Optional)
-          </label>
-          <input
-            type="text"
-            placeholder="https://github.com/your-project"
-            value={githubLink}
-            onChange={(e) => setGithubLink(e.target.value)}
-            disabled={alreadySubmitted}
-            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-200"
-          />
-        </div>
-
-        {/* Live Link */}
-        <div>
-          <label className="block text-sm font-medium mb-1">
-            Live Project Link *
-          </label>
-          <input
-            type="text"
-            placeholder="https://your-live-app.com"
-            value={liveLink}
-            onChange={(e) => setLiveLink(e.target.value)}
-            disabled={alreadySubmitted}
-            className="w-full border p-2 rounded focus:outline-none focus:ring-2 focus:ring-green-500 disabled:bg-gray-200"
-          />
-        </div>
-
-        {/* Submit Button */}
         <button
           onClick={handleSubmitProject}
           disabled={loading || alreadySubmitted}
-          className="w-full bg-green-600 text-white py-2 rounded-lg hover:bg-green-700 transition disabled:opacity-50"
+          className="w-full py-3 rounded-xl text-white font-medium bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 active:scale-[0.98] transition-all shadow-lg disabled:opacity-50"
         >
           {alreadySubmitted
             ? "Already Submitted"

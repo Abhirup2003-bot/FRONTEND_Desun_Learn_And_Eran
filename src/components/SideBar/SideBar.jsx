@@ -21,10 +21,9 @@ function Sidebar({ open, setOpen }) {
   const { user } = useSelector((state) => state.auth);
 
   // 🔥 STATE
-  const [collapsed, setCollapsed] = useState(true); // default collapsed
+  const [collapsed, setCollapsed] = useState(true);
   const [hovered, setHovered] = useState(false);
 
-  // 👉 FINAL WIDTH LOGIC
   const isExpanded = !collapsed || hovered;
 
   const menuItems = [
@@ -64,11 +63,14 @@ function Sidebar({ open, setOpen }) {
           bg-gradient-to-b from-gray-900 via-gray-950 to-black
           border-r border-gray-800
           
-          hidden md:flex flex-col sticky top-0
+          flex flex-col
           
-          fixed top-0 left-0 z-50 flex-col
+          fixed top-0 left-0 z-50
+          
+          transition-transform duration-300
+          
+          md:translate-x-0
           ${open ? "translate-x-0" : "-translate-x-full"}
-          transition-transform duration-300 md:translate-x-0
         `}
         style={{ boxShadow: "0 0 40px rgba(0,0,0,0.6)" }}
       >
@@ -86,7 +88,7 @@ function Sidebar({ open, setOpen }) {
             )}
 
             <div className="flex gap-2">
-              {/* Manual toggle */}
+              {/* Collapse toggle */}
               <button
                 onClick={() => setCollapsed(!collapsed)}
                 className="p-1 hover:bg-gray-800 rounded"
@@ -124,7 +126,6 @@ function Sidebar({ open, setOpen }) {
                 >
                   <Icon size={20} className="opacity-90" />
 
-                  {/* TEXT */}
                   {isExpanded && (
                     <motion.span
                       initial={{ opacity: 0, x: -10 }}
@@ -135,7 +136,6 @@ function Sidebar({ open, setOpen }) {
                     </motion.span>
                   )}
 
-                  {/* TOOLTIP */}
                   {!isExpanded && (
                     <span className="absolute left-16 bg-black text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition">
                       {item.name}

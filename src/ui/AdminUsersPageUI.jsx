@@ -21,7 +21,7 @@ const AdminUsersPageUI = ({
   handleClose,
 }) => {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-6 md:p-10">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 p-4 sm:p-6 md:p-10">
       <div className="max-w-7xl mx-auto">
         {/* HEADER */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-10">
@@ -57,74 +57,131 @@ const AdminUsersPageUI = ({
           </div>
         )}
 
-        {/* TABLE */}
+        {/* TABLE / MOBILE CARDS */}
         <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
-              <tr>
-                <th className="px-6 py-4 text-left">User</th>
-                <th className="px-6 py-4 text-left">Email</th>
-                <th className="px-6 py-4 text-right">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {loading ? (
+          {/* DESKTOP TABLE */}
+          <div className="hidden md:block">
+            <table className="w-full text-sm">
+              <thead className="bg-gray-50 text-gray-500 uppercase text-xs">
                 <tr>
-                  <td colSpan="3" className="text-center py-12">
-                    <Loader2 className="animate-spin mx-auto" />
-                    <p className="text-gray-400 mt-2">Fetching users...</p>
-                  </td>
+                  <th className="px-6 py-4 text-left">User</th>
+                  <th className="px-6 py-4 text-left">Email</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
-              ) : filteredUsers.length === 0 ? (
-                <tr>
-                  <td colSpan="3" className="text-center py-12 text-gray-400">
-                    No users found
-                  </td>
-                </tr>
-              ) : (
-                filteredUsers.map((user) => (
-                  <tr
-                    key={user._id}
-                    className="border-t hover:bg-blue-50/40 transition"
-                  >
-                    <td className="px-6 py-4 flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center justify-center font-bold">
-                        {user?.userName?.charAt(0).toUpperCase() || "U"}
-                      </div>
-                      <div>
-                        <p className="font-semibold text-gray-800">
-                          {user?.userName || "N/A"}
-                        </p>
-                        <p className="text-xs text-gray-400">
-                          {user?.role || "user"}
-                        </p>
-                      </div>
-                    </td>
+              </thead>
 
-                    <td className="px-6 py-4 text-gray-500">{user?.email}</td>
-
-                    <td className="px-6 py-4 text-right space-x-2">
-                      <button
-                        onClick={() => handleEdit(user)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition"
-                      >
-                        <Pencil className="w-3 h-3" /> Edit
-                      </button>
-
-                      <button
-                        onClick={() => handleDelete(user._id)}
-                        className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
-                      >
-                        <Trash2 className="w-3 h-3" /> Delete
-                      </button>
+              <tbody>
+                {loading ? (
+                  <tr>
+                    <td colSpan="3" className="text-center py-12">
+                      <Loader2 className="animate-spin mx-auto" />
+                      <p className="text-gray-400 mt-2">Fetching users...</p>
                     </td>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                ) : filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="3" className="text-center py-12 text-gray-400">
+                      No users found
+                    </td>
+                  </tr>
+                ) : (
+                  filteredUsers.map((user) => (
+                    <tr
+                      key={user._id}
+                      className="border-t hover:bg-blue-50/40 transition"
+                    >
+                      <td className="px-6 py-4 flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center justify-center font-bold">
+                          {user?.userName?.charAt(0).toUpperCase() || "U"}
+                        </div>
+                        <div>
+                          <p className="font-semibold text-gray-800">
+                            {user?.userName || "N/A"}
+                          </p>
+                          <p className="text-xs text-gray-400">
+                            {user?.role || "user"}
+                          </p>
+                        </div>
+                      </td>
 
+                      <td className="px-6 py-4 text-gray-500">{user?.email}</td>
+
+                      <td className="px-6 py-4 text-right space-x-2">
+                        <button
+                          onClick={() => handleEdit(user)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition"
+                        >
+                          <Pencil className="w-3 h-3" /> Edit
+                        </button>
+
+                        <button
+                          onClick={() => handleDelete(user._id)}
+                          className="inline-flex items-center gap-1 px-3 py-1.5 text-xs font-semibold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
+                        >
+                          <Trash2 className="w-3 h-3" /> Delete
+                        </button>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* MOBILE CARDS */}
+          <div className="md:hidden p-4 space-y-4">
+            {loading ? (
+              <div className="text-center py-10">
+                <Loader2 className="animate-spin mx-auto" />
+                <p className="text-gray-400 mt-2">Fetching users...</p>
+              </div>
+            ) : filteredUsers.length === 0 ? (
+              <p className="text-center text-gray-400 py-10">No users found</p>
+            ) : (
+              filteredUsers.map((user) => (
+                <div
+                  key={user._id}
+                  className="border rounded-xl p-4 shadow-sm bg-gray-50"
+                >
+                  <div className="flex items-center gap-3 mb-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white flex items-center justify-center font-bold">
+                      {user?.userName?.charAt(0).toUpperCase() || "U"}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-800">
+                        {user?.userName || "N/A"}
+                      </p>
+                      <p className="text-xs text-gray-400">
+                        {user?.role || "user"}
+                      </p>
+                    </div>
+                  </div>
+
+                  <p className="text-sm text-gray-500 mb-4 break-all">
+                    {user?.email}
+                  </p>
+
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleEdit(user)}
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs font-semibold bg-amber-50 text-amber-700 rounded-lg hover:bg-amber-100 transition"
+                    >
+                      <Pencil className="w-3 h-3" /> Edit
+                    </button>
+
+                    <button
+                      onClick={() => handleDelete(user._id)}
+                      className="flex-1 flex items-center justify-center gap-1 px-3 py-2 text-xs font-semibold bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition"
+                    >
+                      <Trash2 className="w-3 h-3" /> Delete
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
+          </div>
+
+          {/* FOOTER */}
           <div className="px-6 py-3 text-xs text-gray-400 border-t">
             Showing {filteredUsers.length} users
           </div>
@@ -138,7 +195,7 @@ const AdminUsersPageUI = ({
           onClick={handleClose}
         >
           <div
-            className="bg-white rounded-2xl w-full max-w-md shadow-2xl"
+            className="bg-white rounded-2xl w-full max-w-md shadow-2xl mx-4"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center p-5 border-b">
