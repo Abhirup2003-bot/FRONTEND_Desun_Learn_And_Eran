@@ -209,6 +209,7 @@
 import React, { useState } from "react";
 import { Trophy, Users, FileText, Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboardUI({
   contests,
@@ -218,6 +219,7 @@ export default function AdminDashboardUI({
   teamsData,
 }) {
   const [selectedContest, setSelectedContest] = useState(null);
+  const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-gray-900">
@@ -232,32 +234,23 @@ export default function AdminDashboardUI({
           </p>
         </div>
 
-        {/* STATS */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        {/* STATS (SOLO REMOVED) */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           <StatCard
             label="Contests"
             value={metrics.totalContests}
             icon={<Trophy />}
           />
+          <StatCard label="Teams" value={metrics.totalTeams} icon={<Users />} />
           <StatCard
-            label="Teams"
-            value={metrics.totalTeamParticipants}
-            icon={<Users />}
-          />
-          <StatCard
-            label="Solo"
-            value={metrics.totalSoloParticipants}
+            label="Participants"
+            value={metrics.totalParticipants}
             icon={<Users />}
           />
           <StatCard
             label="Submissions"
             value={metrics.totalSubmissions}
             icon={<FileText />}
-          />
-          <StatCard
-            label="Pending"
-            value={metrics.pendingEvaluations}
-            icon={<Clock />}
           />
         </div>
 
@@ -276,7 +269,6 @@ export default function AdminDashboardUI({
                 onClick={() => setSelectedContest(contest)}
                 className="group cursor-pointer rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
               >
-                {/* IMAGE */}
                 <div className="h-40 overflow-hidden bg-gray-100">
                   <img
                     src={contest.image || "https://via.placeholder.com/400"}
@@ -284,7 +276,6 @@ export default function AdminDashboardUI({
                   />
                 </div>
 
-                {/* CONTENT */}
                 <div className="p-5 space-y-3">
                   <h3 className="font-semibold text-lg line-clamp-1">
                     {contest.title}
@@ -311,30 +302,29 @@ export default function AdminDashboardUI({
       {/* MODAL */}
       <AnimatePresence>
         {selectedContest && (
-          <motion.div
-            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-          >
-            <motion.div
-              initial={{ scale: 0.9, y: 40 }}
-              animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.9, y: 40 }}
-              transition={{ type: "spring", stiffness: 120 }}
-              className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-gray-200 p-6"
-            >
+          <motion.div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+            <motion.div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-gray-200 p-6">
               {/* HEADER */}
               <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-bold tracking-tight">
-                  {selectedContest.title}
-                </h2>
+                <h2 className="text-xl font-bold">{selectedContest.title}</h2>
 
                 <button
                   onClick={() => setSelectedContest(null)}
-                  className="p-2 rounded-lg hover:bg-gray-100 transition"
+                  className="p-2 rounded-lg hover:bg-gray-100"
                 >
                   <X />
+                </button>
+              </div>
+
+              {/* SUBMISSION BUTTON */}
+              <div className="mb-4">
+                <button
+                  onClick={() =>
+                    navigate(`/admin/submissions/${selectedContest._id}`)
+                  }
+                  className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                >
+                  View Submissions
                 </button>
               </div>
 
@@ -350,15 +340,11 @@ export default function AdminDashboardUI({
                       (t) => t._id === p.teamName || t._id === p.team?._id,
                     );
 
-                    console.log("👤 Participant:", p);
-                    console.log("👥 Team:", team);
-
                     return (
                       <div
                         key={i}
                         className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3 hover:bg-gray-100 transition"
                       >
-                        {/* USER */}
                         <div>
                           <p className="font-medium">
                             👤 {user.userName || "Unknown"}
@@ -366,7 +352,6 @@ export default function AdminDashboardUI({
                           <p className="text-xs text-gray-500">{user.email}</p>
                         </div>
 
-                        {/* TEAM */}
                         {team && (
                           <div className="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
                             <p className="text-sm text-indigo-600 font-semibold mb-2">
@@ -395,7 +380,7 @@ export default function AdminDashboardUI({
   );
 }
 
-/* PREMIUM STAT CARD (LIGHT UI UPGRADED) */
+/* PREMIUM STAT CARD */
 function StatCard({ label, value, icon }) {
   return (
     <motion.div
@@ -413,7 +398,6 @@ function StatCard({ label, value, icon }) {
         </div>
       </div>
 
-      {/* subtle glow */}
       <div className="absolute inset-0 opacity-0 hover:opacity-10 bg-gradient-to-r from-indigo-200 to-blue-200 transition" />
     </motion.div>
   );

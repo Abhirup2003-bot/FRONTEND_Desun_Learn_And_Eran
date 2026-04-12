@@ -67,7 +67,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
           >
             {contests
               .filter((c) => c.type === "Ongoing")
-              .slice(0, 3)
+              .slice(0, 4)
               .map((contest) => (
                 <motion.div
                   key={contest._id}

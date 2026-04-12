@@ -20,6 +20,7 @@ import SubmitProjectPage from "./pages/SubmitProjectPage";
 import ProfilePage from "./pages/ProfilePage";
 import MyContestsPage from "./pages/MyContestsPage";
 import AdminTeamPage from "./pages/AdminTeamPage";
+import AdminSubmissionPage from "./pages/AdminSubmissionPage";
 
 function App() {
   return (
@@ -52,11 +53,14 @@ function App() {
 
             <Route path="contest" element={<AdminContestPage />} />
             <Route path="teams" element={<AdminTeamPage />} />
+            <Route
+              path="submissions/:contestId"
+              element={<AdminSubmissionPage />}
+            />
           </Route>
         </Route>
       </Routes>
 
-      {/* ✅ TOAST OUTSIDE ROUTES */}
       <ToastContainer position="top-right" autoClose={2000} />
     </>
   );

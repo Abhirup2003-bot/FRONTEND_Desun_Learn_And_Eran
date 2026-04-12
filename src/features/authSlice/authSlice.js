@@ -1,25 +1,24 @@
 // import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-// // ================= LOAD FROM LOCAL STORAGE =================
+// /* ================= LOAD FROM LOCAL STORAGE ================= */
 // const savedAuth = JSON.parse(localStorage.getItem("auth"));
 
-// // 🔥 SAFE TOKEN EXTRACTOR (NEW)
+// /* ================= SAFE EXTRACTOR ================= */
 // const extractAuthData = (payload) => {
 //   const userData =
-//     payload?.data?.user || payload?.user || payload?.data || null;
+//     payload?.user || payload?.data?.user || payload?.data || null;
 
 //   const token =
-//     payload?.accessToken ||
 //     payload?.token ||
+//     payload?.accessToken ||
 //     payload?.data?.token ||
 //     payload?.data?.accessToken ||
-//     payload?.user?.token || // 🔥 added: in case token is inside user
 //     null;
 
 //   return { userData, token };
 // };
 
-// // ================= LOGIN =================
+// /* ================= LOGIN ================= */
 // export const loginUser = createAsyncThunk(
 //   "auth/loginUser",
 //   async ({ email, password }, { rejectWithValue }) => {
@@ -47,7 +46,6 @@
 //   },
 // );
 
-// // ================= REGISTER =================
 // export const registerUser = createAsyncThunk(
 //   "auth/registerUser",
 //   async ({ userName, email, password, phoneNumber }, { rejectWithValue }) => {
@@ -57,8 +55,12 @@
 //         {
 //           method: "POST",
 //           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify({ userName, email, password, phoneNumber }),
-//           credentials: "include",
+//           body: JSON.stringify({
+//             userName,
+//             email,
+//             password,
+//             phoneNumber: Number(phoneNumber), // ✅ IMPORTANT FIX
+//           }),
 //         },
 //       );
 
@@ -74,8 +76,7 @@
 //     }
 //   },
 // );
-
-// // ================= LOGOUT =================
+// /* ================= LOGOUT ================= */
 // export const logoutUser = createAsyncThunk(
 //   "auth/logoutUser",
 //   async (_, { rejectWithValue }) => {
@@ -88,9 +89,8 @@
 //         },
 //       );
 
-//       const data = await res.json().catch(() => ({}));
-
 //       if (!res.ok) {
+//         const data = await res.json().catch(() => ({}));
 //         return rejectWithValue(data?.msg || "Logout failed");
 //       }
 
@@ -101,34 +101,7 @@
 //   },
 // );
 
-// // ================= FORGOT PASSWORD =================
-// export const forgetPassword = createAsyncThunk(
-//   "auth/forgotPassword",
-//   async ({ email }, { rejectWithValue }) => {
-//     try {
-//       const res = await fetch(
-//         "https://backend-three-tau-88.vercel.app/app/v1/Learn/forget-password",
-//         {
-//           method: "POST",
-//           headers: { "Content-Type": "application/json" },
-//           body: JSON.stringify({ email }),
-//         },
-//       );
-
-//       const data = await res.json().catch(() => ({}));
-
-//       if (!res.ok) {
-//         return rejectWithValue(data?.msg || "Failed to send reset email");
-//       }
-
-//       return data;
-//     } catch {
-//       return rejectWithValue("Server not reachable");
-//     }
-//   },
-// );
-
-// // ================= SLICE =================
+// /* ================= SLICE ================= */
 // const authSlice = createSlice({
 //   name: "auth",
 //   initialState: {
@@ -139,76 +112,91 @@
 //     error: null,
 //   },
 //   reducers: {},
+
 //   extraReducers: (builder) => {
 //     builder
-//       // ================= LOGIN =================
+
+//       /* ================= LOGIN ================= */
 //       .addCase(loginUser.pending, (state) => {
 //         state.loading = true;
 //         state.error = null;
 //       })
+
 //       .addCase(loginUser.fulfilled, (state, action) => {
 //         state.loading = false;
-//         state.isLoggedIn = true;
 
-//         // 🔥 USE SAFE EXTRACTOR
 //         const { userData, token } = extractAuthData(action.payload);
 
+//         if (!token) {
+//           state.error = "Token not received";
+//           state.isLoggedIn = false;
+//           return;
+//         }
+
+//         state.isLoggedIn = true;
 //         state.user = userData;
 //         state.token = token;
 
-//         // 🔥 DEBUG (helps catch future bugs)
-
-//         // ✅ SAVE TO LOCAL STORAGE
 //         localStorage.setItem(
 //           "auth",
 //           JSON.stringify({
 //             user: userData,
-//             token: token,
+//             token,
 //             isLoggedIn: true,
 //           }),
 //         );
 //       })
+
 //       .addCase(loginUser.rejected, (state, action) => {
 //         state.loading = false;
 //         state.error = action.payload;
 //       })
 
-//       // ================= REGISTER =================
+//       /* ================= REGISTER ================= */
 //       .addCase(registerUser.pending, (state) => {
 //         state.loading = true;
 //         state.error = null;
 //       })
+
 //       .addCase(registerUser.fulfilled, (state, action) => {
 //         state.loading = false;
 
-//         // 🔥 SAME SAFE EXTRACTION
 //         const { userData, token } = extractAuthData(action.payload);
 
-//         state.isLoggedIn = true;
-//         state.user = userData;
-//         state.token = token;
+//         // 🔥 HANDLE BOTH CASES
 
-//         console.log("REGISTER TOKEN:", token);
+//         if (token) {
+//           // ✅ Auto login if token exists
+//           state.isLoggedIn = true;
+//           state.user = userData;
+//           state.token = token;
 
-//         // ✅ SAVE TO LOCAL STORAGE
-//         localStorage.setItem(
-//           "auth",
-//           JSON.stringify({
-//             user: userData,
-//             token: token,
-//             isLoggedIn: true,
-//           }),
-//         );
+//           localStorage.setItem(
+//             "auth",
+//             JSON.stringify({
+//               user: userData,
+//               token,
+//               isLoggedIn: true,
+//             }),
+//           );
+//         } else {
+//           // ✅ No token → require login
+//           state.isLoggedIn = false;
+//           state.user = null;
+//           state.token = null;
+//         }
 //       })
+
 //       .addCase(registerUser.rejected, (state, action) => {
 //         state.loading = false;
 //         state.error = action.payload;
 //       })
 
-//       // ================= LOGOUT =================
+//       /* ================= LOGOUT ================= */
 //       .addCase(logoutUser.pending, (state) => {
 //         state.loading = true;
 //       })
+
 //       .addCase(logoutUser.fulfilled, (state) => {
 //         state.loading = false;
 //         state.isLoggedIn = false;
@@ -217,19 +205,8 @@
 
 //         localStorage.removeItem("auth");
 //       })
-//       .addCase(logoutUser.rejected, (state, action) => {
-//         state.loading = false;
-//         state.error = action.payload;
-//       })
 
-//       // ================= FORGOT PASSWORD =================
-//       .addCase(forgetPassword.pending, (state) => {
-//         state.loading = true;
-//       })
-//       .addCase(forgetPassword.fulfilled, (state) => {
-//         state.loading = false;
-//       })
-//       .addCase(forgetPassword.rejected, (state, action) => {
+//       .addCase(logoutUser.rejected, (state, action) => {
 //         state.loading = false;
 //         state.error = action.payload;
 //       });
@@ -240,8 +217,8 @@
 
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 
-/* ================= LOAD FROM LOCAL STORAGE ================= */
-const savedAuth = JSON.parse(localStorage.getItem("auth"));
+/* ================= SAFE LOCAL STORAGE LOAD ================= */
+const savedAuth = JSON.parse(localStorage.getItem("auth") || "null");
 
 /* ================= SAFE EXTRACTOR ================= */
 const extractAuthData = (payload) => {
@@ -286,6 +263,7 @@ export const loginUser = createAsyncThunk(
   },
 );
 
+/* ================= REGISTER ================= */
 export const registerUser = createAsyncThunk(
   "auth/registerUser",
   async ({ userName, email, password, phoneNumber }, { rejectWithValue }) => {
@@ -299,7 +277,7 @@ export const registerUser = createAsyncThunk(
             userName,
             email,
             password,
-            phoneNumber: Number(phoneNumber), // ✅ IMPORTANT FIX
+            phoneNumber: Number(phoneNumber),
           }),
         },
       );
@@ -316,6 +294,7 @@ export const registerUser = createAsyncThunk(
     }
   },
 );
+
 /* ================= LOGOUT ================= */
 export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
@@ -351,6 +330,7 @@ const authSlice = createSlice({
     loading: false,
     error: null,
   },
+
   reducers: {},
 
   extraReducers: (builder) => {
@@ -403,10 +383,7 @@ const authSlice = createSlice({
 
         const { userData, token } = extractAuthData(action.payload);
 
-        // 🔥 HANDLE BOTH CASES
-
         if (token) {
-          // ✅ Auto login if token exists
           state.isLoggedIn = true;
           state.user = userData;
           state.token = token;
@@ -420,10 +397,19 @@ const authSlice = createSlice({
             }),
           );
         } else {
-          // ✅ No token → require login
-          state.isLoggedIn = false;
-          state.user = null;
+          // still login user (IMPORTANT FIX)
+          state.isLoggedIn = true;
+          state.user = userData;
           state.token = null;
+
+          localStorage.setItem(
+            "auth",
+            JSON.stringify({
+              user: userData,
+              token: null,
+              isLoggedIn: true,
+            }),
+          );
         }
       })
 
