@@ -1,3 +1,211 @@
+// import React, { useState } from "react";
+// import { Trophy, Users, FileText, Clock, X } from "lucide-react";
+// import { motion, AnimatePresence } from "framer-motion";
+
+// export default function AdminDashboardUI({
+//   contests,
+//   loading,
+//   metrics,
+//   participantsData,
+//   teamsData,
+// }) {
+//   const [selectedContest, setSelectedContest] = useState(null);
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-white to-gray-100 text-gray-900">
+//       <div className="p-4 sm:p-6 lg:p-8 space-y-10">
+//         {/* HEADER */}
+//         <div>
+//           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+//             Admin Dashboard
+//           </h1>
+//           <p className="text-gray-500 text-sm">
+//             Manage contests, teams & participants
+//           </p>
+//         </div>
+
+//         {/* STATS */}
+//         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+//           <StatCard
+//             label="Contests"
+//             value={metrics.totalContests}
+//             icon={<Trophy />}
+//           />
+//           <StatCard
+//             label="Teams"
+//             value={metrics.totalTeamParticipants}
+//             icon={<Users />}
+//           />
+//           <StatCard
+//             label="Solo"
+//             value={metrics.totalSoloParticipants}
+//             icon={<Users />}
+//           />
+//           <StatCard
+//             label="Submissions"
+//             value={metrics.totalSubmissions}
+//             icon={<FileText />}
+//           />
+//           <StatCard
+//             label="Pending"
+//             value={metrics.pendingEvaluations}
+//             icon={<Clock />}
+//           />
+//         </div>
+
+//         {/* CONTEST LIST */}
+//         {loading ? (
+//           <p className="text-gray-400 animate-pulse">Loading contests...</p>
+//         ) : (
+//           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+//             {contests.map((contest, i) => (
+//               <motion.div
+//                 key={contest._id}
+//                 initial={{ opacity: 0, y: 40 }}
+//                 animate={{ opacity: 1, y: 0 }}
+//                 transition={{ delay: i * 0.05 }}
+//                 whileHover={{ y: -6, scale: 1.02 }}
+//                 onClick={() => setSelectedContest(contest)}
+//                 className="group cursor-pointer rounded-3xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-xl transition"
+//               >
+//                 {/* IMAGE */}
+//                 <div className="h-40 overflow-hidden">
+//                   <img
+//                     src={contest.image || "https://via.placeholder.com/400"}
+//                     className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+//                   />
+//                 </div>
+
+//                 {/* CONTENT */}
+//                 <div className="p-5 space-y-3">
+//                   <h3 className="font-semibold text-lg">{contest.title}</h3>
+
+//                   <p className="text-xs text-gray-500">{contest.type}</p>
+
+//                   <div className="flex justify-between items-center">
+//                     <span className="text-xs px-3 py-1 rounded-full bg-indigo-100 text-indigo-600">
+//                       {contest.participationType || "Team"}
+//                     </span>
+
+//                     <span className="text-xs px-3 py-1 rounded-full bg-green-100 text-green-600">
+//                       👥 {participantsData[contest._id]?.length || 0}
+//                     </span>
+//                   </div>
+//                 </div>
+//               </motion.div>
+//             ))}
+//           </div>
+//         )}
+//       </div>
+
+//       {/* MODAL */}
+//       <AnimatePresence>
+//         {selectedContest && (
+//           <motion.div
+//             className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4"
+//             initial={{ opacity: 0 }}
+//             animate={{ opacity: 1 }}
+//             exit={{ opacity: 0 }}
+//           >
+//             <motion.div
+//               initial={{ scale: 0.9, y: 40 }}
+//               animate={{ scale: 1, y: 0 }}
+//               exit={{ scale: 0.9, y: 40 }}
+//               transition={{ type: "spring", stiffness: 120 }}
+//               className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-gray-200 p-6"
+//             >
+//               {/* HEADER */}
+//               <div className="flex justify-between items-center mb-6">
+//                 <h2 className="text-xl font-bold">{selectedContest.title}</h2>
+//                 <button
+//                   onClick={() => setSelectedContest(null)}
+//                   className="p-2 rounded-lg hover:bg-gray-100 transition"
+//                 >
+//                   <X />
+//                 </button>
+//               </div>
+
+//               {/* PARTICIPANTS */}
+//               <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
+//                 {(participantsData[selectedContest._id] || []).length === 0 ? (
+//                   <p className="text-gray-500 text-sm">No participants yet</p>
+//                 ) : (
+//                   participantsData[selectedContest._id].map((p, i) => {
+//                     const user = p.user || {};
+
+//                     const team = teamsData.find(
+//                       (t) => t._id === p.teamName || t._id === p.team?._id,
+//                     );
+
+//                     console.log("👤 Participant:", p);
+//                     console.log("👥 Team:", team);
+
+//                     return (
+//                       <div
+//                         key={i}
+//                         className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3"
+//                       >
+//                         {/* USER */}
+//                         <div>
+//                           <p className="font-medium">
+//                             👤 {user.userName || "Unknown"}
+//                           </p>
+//                           <p className="text-xs text-gray-500">{user.email}</p>
+//                         </div>
+
+//                         {/* TEAM */}
+//                         {team && (
+//                           <div className="bg-white rounded-lg p-3 border border-gray-200">
+//                             <p className="text-sm text-indigo-600 font-semibold mb-2">
+//                               🏷️ {team.name}
+//                             </p>
+
+//                             <div className="space-y-1">
+//                               {team.members?.map((m, idx) => (
+//                                 <p key={idx} className="text-xs text-gray-600">
+//                                   • {m.userName || m.email}
+//                                 </p>
+//                               ))}
+//                             </div>
+//                           </div>
+//                         )}
+//                       </div>
+//                     );
+//                   })
+//                 )}
+//               </div>
+//             </motion.div>
+//           </motion.div>
+//         )}
+//       </AnimatePresence>
+//     </div>
+//   );
+// }
+
+// /* PREMIUM STAT CARD */
+// function StatCard({ label, value, icon }) {
+//   return (
+//     <motion.div
+//       whileHover={{ scale: 1.04 }}
+//       className="relative overflow-hidden rounded-2xl bg-white border border-gray-200 p-4 shadow-sm hover:shadow-lg transition"
+//     >
+//       <div className="flex justify-between items-center">
+//         <div>
+//           <p className="text-xs text-gray-500">{label}</p>
+//           <h2 className="text-xl font-bold">{value}</h2>
+//         </div>
+
+//         <div className="p-2 bg-gradient-to-r from-indigo-500 to-purple-500 text-white rounded-lg shadow">
+//           {icon}
+//         </div>
+//       </div>
+
+//       {/* subtle hover glow */}
+//       <div className="absolute inset-0 opacity-0 hover:opacity-10 bg-gradient-to-r from-indigo-400 to-purple-400 transition" />
+//     </motion.div>
+//   );
+// }
+
 import React, { useState } from "react";
 import { Trophy, Users, FileText, Clock, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -5,143 +213,176 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function AdminDashboardUI({
   contests,
   loading,
-  sidebarOpen,
-  setSidebarOpen,
   metrics,
   participantsData,
+  teamsData,
 }) {
   const [selectedContest, setSelectedContest] = useState(null);
 
   return (
-    <div className="flex min-h-screen bg-gradient-to-br from-gray-100 via-gray-200 to-gray-100">
-      <div className="flex-1 flex flex-col">
-        <main className="p-6 space-y-8">
-          {/* STATS */}
-          <div className="grid md:grid-cols-5 gap-6">
-            <StatCard
-              label="Contests"
-              value={metrics.totalContests}
-              icon={<Trophy />}
-            />
-            <StatCard
-              label="Team"
-              value={metrics.totalTeamParticipants}
-              icon={<Users />}
-            />
-            <StatCard
-              label="Solo"
-              value={metrics.totalSoloParticipants}
-              icon={<Users />}
-            />
-            <StatCard
-              label="Submissions"
-              value={metrics.totalSubmissions}
-              icon={<FileText />}
-            />
-            <StatCard
-              label="Pending"
-              value={metrics.pendingEvaluations}
-              icon={<Clock />}
-            />
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 text-gray-900">
+      <div className="p-4 sm:p-6 lg:p-8 space-y-10">
+        {/* HEADER */}
+        <div className="space-y-1">
+          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">
+            Admin Dashboard
+          </h1>
+          <p className="text-gray-500 text-sm">
+            Manage contests, teams & participants
+          </p>
+        </div>
+
+        {/* STATS */}
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+          <StatCard
+            label="Contests"
+            value={metrics.totalContests}
+            icon={<Trophy />}
+          />
+          <StatCard
+            label="Teams"
+            value={metrics.totalTeamParticipants}
+            icon={<Users />}
+          />
+          <StatCard
+            label="Solo"
+            value={metrics.totalSoloParticipants}
+            icon={<Users />}
+          />
+          <StatCard
+            label="Submissions"
+            value={metrics.totalSubmissions}
+            icon={<FileText />}
+          />
+          <StatCard
+            label="Pending"
+            value={metrics.pendingEvaluations}
+            icon={<Clock />}
+          />
+        </div>
+
+        {/* CONTEST LIST */}
+        {loading ? (
+          <div className="text-gray-400 animate-pulse">Loading contests...</div>
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {contests.map((contest, i) => (
+              <motion.div
+                key={contest._id}
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                whileHover={{ y: -8, scale: 1.02 }}
+                onClick={() => setSelectedContest(contest)}
+                className="group cursor-pointer rounded-2xl overflow-hidden border border-gray-200 bg-white shadow-sm hover:shadow-xl transition-all duration-300"
+              >
+                {/* IMAGE */}
+                <div className="h-40 overflow-hidden bg-gray-100">
+                  <img
+                    src={contest.image || "https://via.placeholder.com/400"}
+                    className="w-full h-full object-cover group-hover:scale-110 transition duration-500"
+                  />
+                </div>
+
+                {/* CONTENT */}
+                <div className="p-5 space-y-3">
+                  <h3 className="font-semibold text-lg line-clamp-1">
+                    {contest.title}
+                  </h3>
+
+                  <p className="text-xs text-gray-500">{contest.type}</p>
+
+                  <div className="flex justify-between items-center">
+                    <span className="text-xs px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-100">
+                      {contest.participationType || "Team"}
+                    </span>
+
+                    <span className="text-xs px-3 py-1 rounded-full bg-green-50 text-green-600 border border-green-100">
+                      👥 {participantsData[contest._id]?.length || 0}
+                    </span>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
-
-          {/* CONTEST LIST */}
-          {loading ? (
-            <p className="text-gray-500 animate-pulse">Loading...</p>
-          ) : (
-            <div className="grid md:grid-cols-3 gap-6">
-              {contests.map((contest, i) => (
-                <motion.div
-                  key={contest._id}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.05 }}
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => setSelectedContest(contest)}
-                  className="cursor-pointer bg-white/70 backdrop-blur-lg border border-gray-200 rounded-3xl shadow-md hover:shadow-2xl transition overflow-hidden"
-                >
-                  <div className="h-40 overflow-hidden">
-                    <img
-                      src={contest.image || "https://via.placeholder.com/400"}
-                      alt={contest.title}
-                      className="w-full h-full object-cover hover:scale-110 transition duration-500"
-                    />
-                  </div>
-
-                  <div className="p-5 space-y-2">
-                    <h3 className="font-bold text-lg">{contest.title}</h3>
-                    <p className="text-xs text-gray-500">{contest.type}</p>
-                    <div className="flex justify-between">
-                      <span className="text-xs bg-indigo-100 text-indigo-600 px-2 py-1 rounded-full">
-                        {contest.participationType ||
-                          (contest.maxTeamSize > 1 ? "Team" : "Solo")}
-                      </span>
-                      <span className="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">
-                        👥 {participantsData[contest._id]?.length || 0}
-                      </span>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          )}
-        </main>
+        )}
       </div>
 
       {/* MODAL */}
       <AnimatePresence>
         {selectedContest && (
           <motion.div
-            className="fixed inset-0 bg-black/40 flex items-center justify-center z-50"
+            className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
           >
             <motion.div
-              initial={{ scale: 0.8, y: 40 }}
+              initial={{ scale: 0.9, y: 40 }}
               animate={{ scale: 1, y: 0 }}
-              exit={{ scale: 0.8, y: 40 }}
+              exit={{ scale: 0.9, y: 40 }}
               transition={{ type: "spring", stiffness: 120 }}
-              className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 relative"
+              className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-gray-200 p-6"
             >
-              <button
-                onClick={() => setSelectedContest(null)}
-                className="absolute top-4 right-4 text-gray-500 hover:text-black"
-              >
-                <X />
-              </button>
+              {/* HEADER */}
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold tracking-tight">
+                  {selectedContest.title}
+                </h2>
 
-              <h2 className="text-xl font-bold mb-4">
-                {selectedContest.title} Participants
-              </h2>
+                <button
+                  onClick={() => setSelectedContest(null)}
+                  className="p-2 rounded-lg hover:bg-gray-100 transition"
+                >
+                  <X />
+                </button>
+              </div>
 
-              <div className="space-y-3 max-h-80 overflow-y-auto">
+              {/* PARTICIPANTS */}
+              <div className="space-y-4 max-h-[60vh] overflow-y-auto pr-2">
                 {(participantsData[selectedContest._id] || []).length === 0 ? (
                   <p className="text-gray-500 text-sm">No participants yet</p>
                 ) : (
-                  participantsData[selectedContest._id].map((p, index) => {
+                  participantsData[selectedContest._id].map((p, i) => {
                     const user = p.user || {};
+
+                    const team = teamsData.find(
+                      (t) => t._id === p.teamName || t._id === p.team?._id,
+                    );
+
+                    console.log("👤 Participant:", p);
+                    console.log("👥 Team:", team);
+
                     return (
-                      <motion.div
-                        key={user._id || index}
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.05 }}
-                        className="flex flex-col gap-1 bg-gray-100 px-4 py-2 rounded-lg"
+                      <div
+                        key={i}
+                        className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3 hover:bg-gray-100 transition"
                       >
-                        <span className="text-sm font-medium">
-                          👤 {user.userName || "Unknown User"}
-                        </span>
-                        <span className="text-xs text-gray-500">
-                          📧 {user.email || "No Email"}
-                        </span>
-                        {p.teamName && (
-                          <span className="text-xs text-indigo-600">
-                            🏷️ Team: {p.team?.name}
-                          </span>
+                        {/* USER */}
+                        <div>
+                          <p className="font-medium">
+                            👤 {user.userName || "Unknown"}
+                          </p>
+                          <p className="text-xs text-gray-500">{user.email}</p>
+                        </div>
+
+                        {/* TEAM */}
+                        {team && (
+                          <div className="bg-white rounded-lg p-3 border border-gray-200 shadow-sm">
+                            <p className="text-sm text-indigo-600 font-semibold mb-2">
+                              🏷️ {team.name}
+                            </p>
+
+                            <div className="space-y-1">
+                              {team.members?.map((m, idx) => (
+                                <p key={idx} className="text-xs text-gray-600">
+                                  • {m.userName || m.email}
+                                </p>
+                              ))}
+                            </div>
+                          </div>
                         )}
-                      </motion.div>
+                      </div>
                     );
                   })
                 )}
@@ -154,21 +395,26 @@ export default function AdminDashboardUI({
   );
 }
 
-/* STAT CARD */
+/* PREMIUM STAT CARD (LIGHT UI UPGRADED) */
 function StatCard({ label, value, icon }) {
   return (
     <motion.div
       whileHover={{ scale: 1.05 }}
-      className="bg-white/70 backdrop-blur-md p-5 rounded-2xl shadow flex items-center justify-between"
+      className="relative overflow-hidden rounded-2xl bg-white border border-gray-200 p-4 shadow-sm hover:shadow-lg transition-all duration-300"
     >
-      <div>
-        <p className="text-gray-500 text-sm">{label}</p>
-        <h2 className="text-2xl font-bold">{value}</h2>
+      <div className="flex justify-between items-center">
+        <div>
+          <p className="text-xs text-gray-500">{label}</p>
+          <h2 className="text-xl font-bold text-gray-900">{value}</h2>
+        </div>
+
+        <div className="p-2 bg-gradient-to-r from-indigo-500 to-blue-500 text-white rounded-lg shadow">
+          {icon}
+        </div>
       </div>
 
-      <div className="p-3 bg-gradient-to-r from-indigo-500 to-indigo-700 text-white rounded-xl">
-        {icon}
-      </div>
+      {/* subtle glow */}
+      <div className="absolute inset-0 opacity-0 hover:opacity-10 bg-gradient-to-r from-indigo-200 to-blue-200 transition" />
     </motion.div>
   );
 }

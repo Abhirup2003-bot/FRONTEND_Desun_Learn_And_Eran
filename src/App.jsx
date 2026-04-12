@@ -19,6 +19,7 @@ import AdminUsersPage from "./pages/AdminUserPage";
 import SubmitProjectPage from "./pages/SubmitProjectPage";
 import ProfilePage from "./pages/ProfilePage";
 import MyContestsPage from "./pages/MyContestsPage";
+import AdminTeamPage from "./pages/AdminTeamPage";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
             <Route path="users" element={<AdminUsersPage />} />
 
             <Route path="contest" element={<AdminContestPage />} />
+            <Route path="teams" element={<AdminTeamPage />} />
           </Route>
         </Route>
       </Routes>
