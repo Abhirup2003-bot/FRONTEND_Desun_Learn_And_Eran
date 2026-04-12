@@ -346,10 +346,13 @@ export default function AdminDashboardUI({
                         className="bg-gray-50 border border-gray-200 rounded-xl p-4 space-y-3 hover:bg-gray-100 transition"
                       >
                         <div>
+                          <h3 className="font-bold">Created By</h3>
                           <p className="font-medium">
-                            👤 {user.userName || "Unknown"}
+                            👤 {p.team?.createdTeamBy?.userName || "Unknown"}
                           </p>
-                          <p className="text-xs text-gray-500">{user.email}</p>
+                          <p className="text-xs text-gray-500">
+                            {p.team?.createdTeamBy?.email}
+                          </p>
                         </div>
 
                         {team && (
