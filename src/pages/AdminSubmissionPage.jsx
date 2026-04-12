@@ -78,9 +78,9 @@ export default function AdminSubmissionPage() {
                 <span className="text-xs font-bold uppercase tracking-wider text-gray-400">
                   Team Name
                 </span>
-                {/* <h2 className="font-bold text-xl text-indigo-700">
-                  {item.teamName || "Unnamed Team"}
-                </h2> */}
+                <h2 className="font-bold text-xl text-indigo-700">
+                  {item.teamName?.name || "Unnamed Team"}
+                </h2>
               </div>
 
               <div className="flex flex-col gap-3">
