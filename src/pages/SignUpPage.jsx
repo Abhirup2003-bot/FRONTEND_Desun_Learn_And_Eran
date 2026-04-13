@@ -44,7 +44,7 @@ const SignUpPage = () => {
 
     if (registerUser.fulfilled.match(result)) {
       toast.success("User Registered Successfully");
-      navigate("/");
+      navigate("/login");
     } else {
       const errMsg = result.payload || "Signup failed";
       toast.error(errMsg);

@@ -21,6 +21,8 @@ import ProfilePage from "./pages/ProfilePage";
 import MyContestsPage from "./pages/MyContestsPage";
 import AdminTeamPage from "./pages/AdminTeamPage";
 import AdminSubmissionPage from "./pages/AdminSubmissionPage";
+import AdminEvaluationPage from "./pages/AdminEvaluationPage";
+import Winners from "./pages/Winners";
 
 function App() {
   return (
@@ -43,6 +45,7 @@ function App() {
           <Route path="/profile" element={<ProfilePage />} />
 
           <Route path="/submit-project/:id" element={<SubmitProjectPage />} />
+          <Route path="/winners" element={<Winners />} />
         </Route>
 
         {/* ✅ ADMIN ROUTES */}
@@ -57,6 +60,7 @@ function App() {
               path="submissions/:contestId"
               element={<AdminSubmissionPage />}
             />
+            <Route path="evaluate/:teamId" element={<AdminEvaluationPage />} />
           </Route>
         </Route>
       </Routes>

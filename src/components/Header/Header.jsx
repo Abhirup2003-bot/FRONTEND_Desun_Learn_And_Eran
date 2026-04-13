@@ -71,20 +71,28 @@ const Header = () => {
 
         {/* CENTER NAV */}
         <nav className="hidden md:flex gap-3">
-          {["/", "/contest", "/contact", "/my-contests"].map((path, i) => {
-            const labels = ["Home", "Contests", "Contact", "My Contests"];
-            return (
-              <NavLink
-                key={i}
-                to={path}
-                className={({ isActive }) =>
-                  isActive ? `${linkClass} ${activeClass}` : linkClass
-                }
-              >
-                {labels[i]}
-              </NavLink>
-            );
-          })}
+          {["/", "/contest", "/contact", "/my-contests", "/winners"].map(
+            (path, i) => {
+              const labels = [
+                "Home",
+                "Contests",
+                "Contact",
+                "My Contests",
+                "Winners",
+              ];
+              return (
+                <NavLink
+                  key={i}
+                  to={path}
+                  className={({ isActive }) =>
+                    isActive ? `${linkClass} ${activeClass}` : linkClass
+                  }
+                >
+                  {labels[i]}
+                </NavLink>
+              );
+            },
+          )}
         </nav>
 
         {/* RIGHT */}
@@ -179,6 +187,9 @@ const Header = () => {
           </NavLink>
           <NavLink to="/my-contests" onClick={() => setMenuOpen(false)}>
             My contests
+          </NavLink>
+          <NavLink to="/winners" onClick={() => setMenuOpen(false)}>
+            Winners
           </NavLink>
 
           {/* USER ACTION */}
