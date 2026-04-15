@@ -12,7 +12,6 @@ const MyContestsPage = () => {
   const [submittedMap, setSubmittedMap] = useState({});
 
   const observerRef = useRef();
-
   const navigate = useNavigate();
 
   const token =
@@ -112,7 +111,7 @@ const MyContestsPage = () => {
               <div
                 key={contest._id}
                 onClick={() => handleNavigate(contest._id)}
-                className="group cursor-pointer rounded-3xl overflow-hidden bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl hover:shadow-2xl transition hover:-translate-y-2"
+                className="group cursor-pointer rounded-3xl overflow-hidden bg-white/60 backdrop-blur-xl border border-white/40 shadow-xl hover:shadow-2xl transition hover:-translate-y-2 flex flex-col h-full"
               >
                 <div className="relative">
                   <img
@@ -128,7 +127,7 @@ const MyContestsPage = () => {
                   </div>
                 </div>
 
-                <div className="p-5 space-y-3">
+                <div className="p-5 space-y-3 flex flex-col flex-1">
                   <h2 className="text-lg font-semibold text-gray-900 line-clamp-1">
                     {contest.title}
                   </h2>
@@ -151,7 +150,7 @@ const MyContestsPage = () => {
                       e.stopPropagation();
                       handleNavigate(contest._id);
                     }}
-                    className="w-full mt-2 py-2.5 rounded-xl text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-[0.97] transition"
+                    className="w-full mt-auto py-2.5 rounded-xl text-white bg-gradient-to-r from-green-500 to-emerald-600 hover:scale-[0.97] transition"
                   >
                     Submit Project
                   </button>

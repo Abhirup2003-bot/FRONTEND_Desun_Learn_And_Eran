@@ -74,12 +74,12 @@ function HomeUI({ contests, loading, error, handleExplore }) {
                   variants={card}
                   whileHover={{ y: -6, scale: 1.015 }}
                   transition={{ duration: 0.3 }}
-                  className="group relative rounded-[28px] bg-white/50 backdrop-blur-xl transition-all duration-300"
+                  className="group relative rounded-[28px] bg-white/50 backdrop-blur-xl transition-all duration-300 h-full flex flex-col"
                 >
                   {/* hover glow only (no border) */}
                   <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-indigo-100/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
 
-                  <div className="relative">
+                  <div className="relative h-full flex flex-col">
                     <Suspense fallback={<div className="p-6">Loading...</div>}>
                       <ContestCard contest={contest} />
                     </Suspense>
@@ -112,11 +112,11 @@ function HomeUI({ contests, loading, error, handleExplore }) {
                   variants={card}
                   whileHover={{ y: -6, scale: 1.015 }}
                   transition={{ duration: 0.3 }}
-                  className="group relative rounded-[28px] bg-white/50 backdrop-blur-xl transition-all duration-300"
+                  className="group relative rounded-[28px] bg-white/50 backdrop-blur-xl transition-all duration-300 h-full flex flex-col"
                 >
                   <div className="absolute inset-0 rounded-[28px] bg-gradient-to-br from-green-100/30 to-transparent opacity-0 group-hover:opacity-100 transition duration-300"></div>
 
-                  <div className="relative">
+                  <div className="relative h-full flex flex-col">
                     <Suspense fallback={<div className="p-6">Loading...</div>}>
                       <ContestCard contest={contest} />
                     </Suspense>
