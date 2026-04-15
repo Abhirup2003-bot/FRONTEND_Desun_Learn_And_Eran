@@ -358,23 +358,21 @@ export default function AdminDashboardUI({
                             </div>
                           </div>
                         )}
-                        {/* SUBMISSION BUTTON */}
-                        <div className="mb-4">
-                          <button
-                            onClick={() =>
-                              navigate(
-                                `/admin/submissions/${selectedContest._id}`,
-                              )
-                            }
-                            className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
-                          >
-                            View Submissions
-                          </button>
-                        </div>
                       </div>
                     );
                   })
                 )}
+                {/* SUBMISSION BUTTON */}
+                <div className="mb-4 flex justify-center">
+                  <button
+                    onClick={() =>
+                      navigate(`/admin/submissions/${selectedContest._id}`)
+                    }
+                    className="px-4 py-2 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 transition"
+                  >
+                    View Submissions
+                  </button>
+                </div>
               </div>
             </motion.div>
           </motion.div>

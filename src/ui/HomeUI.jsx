@@ -63,7 +63,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 items-stretch"
           >
             {contests
               .filter((c) => c.type === "Ongoing")
@@ -101,7 +101,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
             variants={container}
             initial="hidden"
             animate="show"
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10"
+            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-10 items-stretch"
           >
             {contests
               .filter((c) => c.type === "Upcoming")

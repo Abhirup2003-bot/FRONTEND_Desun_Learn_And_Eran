@@ -41,11 +41,14 @@ function App() {
         {/* ✅ USER PROTECTED ROUTES */}
         <Route element={<ProtectedRoute />}>
           <Route path="/contest/:id" element={<ContestDetailsPage />} />
-          <Route path="/my-contests" element={<MyContestsPage />} />
+
           <Route path="/profile" element={<ProfilePage />} />
 
           <Route path="/submit-project/:id" element={<SubmitProjectPage />} />
-          <Route path="/winners" element={<Winners />} />
+          <Route element={<Layout />}>
+            <Route path="/my-contests" element={<MyContestsPage />} />
+            <Route path="/winners" element={<Winners />} />
+          </Route>
         </Route>
 
         {/* ✅ ADMIN ROUTES */}
