@@ -304,6 +304,7 @@ import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logoutUser } from "../../features/authSlice/authSlice";
 import HeaderUI from "../../ui/HeaderUI";
+import { toast } from "react-toastify";
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -368,7 +369,7 @@ const Header = () => {
         },
       );
 
-      alert("Team created successfully"); // ✅ added
+      toast.success("Team created successfully!"); // ✅ added
 
       setInvitations((prev) => prev.filter((i) => i._id !== id));
     } catch (err) {
@@ -387,7 +388,7 @@ const Header = () => {
         },
       );
 
-      alert("Team request rejected"); // ✅ added
+      toast.error("Team request rejected");
 
       setInvitations((prev) => prev.filter((i) => i._id !== id));
     } catch (err) {
