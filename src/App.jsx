@@ -33,6 +33,7 @@ function App() {
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
           <Route path="/contest" element={<Contest />} />
+          <Route path="/winners" element={<Winners />} />
         </Route>
 
         <Route path="/login" element={<Login />} />
@@ -47,7 +48,6 @@ function App() {
           <Route path="/submit-project/:id" element={<SubmitProjectPage />} />
           <Route element={<Layout />}>
             <Route path="/my-contests" element={<MyContestsPage />} />
-            <Route path="/winners" element={<Winners />} />
           </Route>
         </Route>
 

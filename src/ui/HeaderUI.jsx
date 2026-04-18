@@ -44,28 +44,20 @@ const HeaderUI = ({
 
           {/* CENTER */}
           <nav className="hidden md:flex gap-3">
-            {["/", "/contest", "/contact", "/my-contests", "/winners"].map(
-              (path, i) => {
-                const labels = [
-                  "Home",
-                  "Contests",
-                  "Contact",
-                  "My Contests",
-                  "Winners",
-                ];
-                return (
-                  <NavLink
-                    key={i}
-                    to={path}
-                    className={({ isActive }) =>
-                      isActive ? `${linkClass} ${activeClass}` : linkClass
-                    }
-                  >
-                    {labels[i]}
-                  </NavLink>
-                );
-              },
-            )}
+            {["/", "/contest", "/my-contests", "/winners"].map((path, i) => {
+              const labels = ["Home", "Contests", "My Contests", "Winners"];
+              return (
+                <NavLink
+                  key={i}
+                  to={path}
+                  className={({ isActive }) =>
+                    isActive ? `${linkClass} ${activeClass}` : linkClass
+                  }
+                >
+                  {labels[i]}
+                </NavLink>
+              );
+            })}
           </nav>
 
           {/* RIGHT */}
