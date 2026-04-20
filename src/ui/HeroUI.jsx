@@ -181,10 +181,6 @@ const HeroUI = ({
                   >
                     Join Contest
                   </button>
-
-                  <button className="px-8 py-3.5 rounded-xl border border-gray-300 text-gray-700 font-semibold bg-white/50 backdrop-blur-md hover:bg-white transition-all">
-                    View Details
-                  </button>
                 </div>
               </div>
 
