@@ -260,7 +260,7 @@ const AdminContestPageUI = ({
                   </p>
 
                   <div className="flex gap-4 text-xs mt-2 text-gray-400">
-                    <span>🏆 ${contest.prizes}</span>
+                    <span>🏆 ₹{contest.prizes}</span>
                     <span>
                       📅{" "}
                       {contest.deadline
