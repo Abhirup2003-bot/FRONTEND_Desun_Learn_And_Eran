@@ -76,7 +76,7 @@ const ContestDetailsPageUi = ({
         <p className="text-gray-600 mb-6">{description}</p>
         <p className="text-gray-600 mb-6">{brief}</p>
 
-        <p className="font-bold text-lg mb-6">${prizes}</p>
+        <p className="font-bold text-lg mb-6">₹{prizes}</p>
 
         <div className="max-w-md space-y-3">
           {hasParticipated && isOngoing && (

@@ -56,7 +56,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
           <SectionHeader
             title="Ongoing Challenges"
             subtitle="Join contests that are live right now"
-            colorClass="bg-green-400 text-slate-700 hover:bg-white/80"
+            colorClass="bg-green-400 text-slate-700 hover:bg-green-500"
           />
 
           {loading && (
@@ -100,7 +100,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
           <SectionHeader
             title="Upcoming Challenges"
             subtitle="Mark your calendar for these events"
-            colorClass="bg-green-400 text-slate-700 hover:bg-white/80"
+            colorClass="bg-green-400 text-slate-700 hover:bg-green-700"
           />
 
           <motion.div

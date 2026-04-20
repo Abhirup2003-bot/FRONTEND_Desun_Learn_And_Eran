@@ -90,7 +90,7 @@ const AdminContestPageUI = ({
 
                   <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase mb-1 ml-1">
-                      Prizes ($)
+                      Prizes (₹)
                     </label>
                     <input
                       type="number"
