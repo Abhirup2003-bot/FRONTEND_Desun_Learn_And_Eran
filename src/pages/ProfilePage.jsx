@@ -1,6 +1,6 @@
 import React, { useEffect, useState, lazy, Suspense } from "react";
 import { useSelector } from "react-redux";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 
 // 🔥 Lazy UI
 const ProfileUI = lazy(() => import("../ui/ProfileUI"));
@@ -45,13 +45,13 @@ const ProfilePage = () => {
   return (
     <div>
       <Suspense fallback={<div>Loading...</div>}>
-        <motion.div
+        <Motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4 }}
         >
           <ProfileUI profile={profile} loading={loading} />
-        </motion.div>
+        </Motion.div>
       </Suspense>
     </div>
   );

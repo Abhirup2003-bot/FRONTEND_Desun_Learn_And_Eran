@@ -207,8 +207,8 @@
 // }
 
 import React, { useState } from "react";
-import { Trophy, Users, FileText, Clock, X } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
+import { Trophy, Users, FileText, X } from "lucide-react";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 
 export default function AdminDashboardUI({
@@ -260,7 +260,7 @@ export default function AdminDashboardUI({
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {contests.map((contest, i) => (
-              <motion.div
+              <Motion.div
                 key={contest._id}
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -293,7 +293,7 @@ export default function AdminDashboardUI({
                     </span>
                   </div>
                 </div>
-              </motion.div>
+              </Motion.div>
             ))}
           </div>
         )}
@@ -302,8 +302,8 @@ export default function AdminDashboardUI({
       {/* MODAL */}
       <AnimatePresence>
         {selectedContest && (
-          <motion.div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
-            <motion.div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-gray-200 p-6">
+          <Motion.div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex justify-center items-center z-50 p-4">
+            <Motion.div className="w-full max-w-2xl bg-white rounded-3xl shadow-2xl border border-gray-200 p-6">
               {/* HEADER */}
               <div className="flex justify-between items-center mb-6">
                 <h2 className="text-xl font-bold">{selectedContest.title}</h2>
@@ -322,8 +322,6 @@ export default function AdminDashboardUI({
                   <p className="text-gray-500 text-sm">No participants yet</p>
                 ) : (
                   participantsData[selectedContest._id].map((p, i) => {
-                    const user = p.user || {};
-
                     const team = teamsData.find(
                       (t) => t._id === p.teamName || t._id === p.team?._id,
                     );
@@ -374,8 +372,8 @@ export default function AdminDashboardUI({
                   </button>
                 </div>
               </div>
-            </motion.div>
-          </motion.div>
+            </Motion.div>
+          </Motion.div>
         )}
       </AnimatePresence>
     </div>
@@ -385,7 +383,7 @@ export default function AdminDashboardUI({
 /* PREMIUM STAT CARD */
 function StatCard({ label, value, icon }) {
   return (
-    <motion.div
+    <Motion.div
       whileHover={{ scale: 1.05 }}
       className="relative overflow-hidden rounded-2xl bg-white border border-gray-200 p-4 shadow-sm hover:shadow-lg transition-all duration-300"
     >
@@ -401,6 +399,6 @@ function StatCard({ label, value, icon }) {
       </div>
 
       <div className="absolute inset-0 opacity-0 hover:opacity-10 bg-gradient-to-r from-indigo-200 to-blue-200 transition" />
-    </motion.div>
+    </Motion.div>
   );
 }

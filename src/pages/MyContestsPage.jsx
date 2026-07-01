@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useCallback, useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -9,16 +9,15 @@ const MyContestsPage = () => {
   const [contests, setContests] = useState([]);
   const [visibleCount, setVisibleCount] = useState(ITEMS_PER_LOAD);
   const [loading, setLoading] = useState(false);
-  const [submittedMap, setSubmittedMap] = useState({});
 
   const observerRef = useRef();
   const navigate = useNavigate();
 
-  const token =
-    useSelector((state) => state.auth?.token) ||
-    useSelector((state) => state.auth?.user?.token);
+  const token = useSelector(
+    (state) => state.auth?.token || state.auth?.user?.token,
+  );
 
-  const fetchMyContests = async () => {
+  const fetchMyContests = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -46,11 +45,11 @@ const MyContestsPage = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     if (token) fetchMyContests();
-  }, [token]);
+  }, [token, fetchMyContests]);
 
   // 🔥 Lazy Load Observer
   useEffect(() => {

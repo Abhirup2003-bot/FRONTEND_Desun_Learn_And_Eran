@@ -8,6 +8,10 @@ const ContestDetailsPageUi = ({
   loading,
   hasParticipated,
 }) => {
+  const [showModal, setShowModal] = React.useState(false);
+  const [teamName, setTeamName] = React.useState("");
+  const [members, setMembers] = React.useState("");
+
   if (!data) return null;
 
   const {
@@ -21,10 +25,6 @@ const ContestDetailsPageUi = ({
     prizes,
     participationType = "solo",
   } = data;
-
-  const [showModal, setShowModal] = React.useState(false);
-  const [teamName, setTeamName] = React.useState("");
-  const [members, setMembers] = React.useState("");
 
   const isOngoing = (type || "").toLowerCase() === "ongoing";
   const isTeam = participationType?.trim()?.toLowerCase() === "team";

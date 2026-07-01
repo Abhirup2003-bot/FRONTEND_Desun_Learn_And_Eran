@@ -46,7 +46,7 @@ const Footer = () => {
         <div>
           <h3 className="text-lg font-semibold mb-3 text-gray-800">Support</h3>
           <div className="flex flex-col gap-2 text-sm text-gray-600">
-            <Link to="/contact" className="hover:text-[#82C600]">
+            <Link to="#" className="hover:text-[#82C600]">
               Contact Us
             </Link>
             <Link to="#" className="hover:text-[#82C600]">

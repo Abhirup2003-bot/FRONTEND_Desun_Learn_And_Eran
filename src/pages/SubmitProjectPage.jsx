@@ -159,17 +159,16 @@
 
 // export default SubmitProjectPage;
 import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
 const SubmitProjectPage = () => {
   const { id } = useParams(); // contestId
-  const navigate = useNavigate();
 
-  const token =
-    useSelector((state) => state.auth?.token) ||
-    useSelector((state) => state.auth?.user?.token);
+  const token = useSelector(
+    (state) => state.auth?.token || state.auth?.user?.token,
+  );
 
   const [githubLink, setGithubLink] = useState("");
   const [liveLink, setLiveLink] = useState("");

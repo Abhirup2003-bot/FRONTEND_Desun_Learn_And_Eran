@@ -176,7 +176,7 @@
 //     </div>
 //   );
 // }
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { toast } from "react-toastify";
 
@@ -195,7 +195,7 @@ export default function Winners() {
     return team;
   };
 
-  const fetchWinners = async () => {
+  const fetchWinners = useCallback(async () => {
     try {
       setLoading(true);
 
@@ -221,11 +221,11 @@ export default function Winners() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [token]);
 
   useEffect(() => {
     fetchWinners();
-  }, []);
+  }, [fetchWinners]);
 
   // ✅ FIXED GROUPING (contestName instead of contest)
   const groupedByContest = winners.reduce((acc, winner, index) => {

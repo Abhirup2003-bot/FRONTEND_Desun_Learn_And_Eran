@@ -134,7 +134,7 @@
 //   );
 // }
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import AdminTeamPageUI from "../ui/AdminTeamPageUI";
 import { useSelector } from "react-redux";
@@ -160,7 +160,7 @@ export default function AdminTeamPage() {
   // =========================
   // FETCH TEAMS
   // =========================
-  const fetchTeams = async () => {
+  const fetchTeams = useCallback(async () => {
     try {
       setLoading(true);
       setError("");
@@ -183,11 +183,11 @@ export default function AdminTeamPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [BASE_URL, token]);
 
   useEffect(() => {
     fetchTeams();
-  }, []);
+  }, [fetchTeams]);
 
   // =========================
   // EDIT

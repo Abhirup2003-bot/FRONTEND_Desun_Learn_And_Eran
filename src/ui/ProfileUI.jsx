@@ -1,5 +1,5 @@
 import React from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { User, Mail, Calendar, Shield } from "lucide-react";
 
 const ProfileUI = ({ profile, loading }) => {
@@ -22,7 +22,7 @@ const ProfileUI = ({ profile, loading }) => {
   }
 
   return (
-    <motion.div
+    <Motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -63,7 +63,7 @@ const ProfileUI = ({ profile, loading }) => {
           value={profile.role || "User"}
         />
       </div>
-    </motion.div>
+    </Motion.div>
   );
 };
 
@@ -71,7 +71,7 @@ export default ProfileUI;
 
 // 🔥 Small reusable card
 const InfoCard = ({ icon, label, value }) => (
-  <motion.div
+  <Motion.div
     whileHover={{ scale: 1.04 }}
     className="flex items-center gap-4 p-5 rounded-2xl bg-gray-50 shadow-sm hover:shadow-md transition"
   >
@@ -81,5 +81,5 @@ const InfoCard = ({ icon, label, value }) => (
       <p className="text-sm text-gray-400">{label}</p>
       <p className="text-lg font-medium text-gray-700">{value || "N/A"}</p>
     </div>
-  </motion.div>
+  </Motion.div>
 );

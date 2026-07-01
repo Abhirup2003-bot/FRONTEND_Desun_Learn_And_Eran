@@ -1,12 +1,35 @@
 import React, { lazy, Suspense } from "react";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 
 // Lazy components
 const HeroSection = lazy(() => import("../components/HeroSection/HeroSection"));
 const ContestCard = lazy(() => import("../components/Card/ContestCard"));
 
-function HomeUI({ contests, loading, error, handleExplore }) {
+const SectionHeader = ({ title, subtitle, colorClass, handleExplore }) => (
+  <Motion.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    className="flex flex-col md:flex-row justify-between md:items-end mb-12 gap-4 px-2 md:px-4"
+  >
+    <div>
+      <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
+        {title}
+      </h2>
+      <p className="text-slate-500 text-sm md:text-base">{subtitle}</p>
+    </div>
+
+    <button
+      onClick={handleExplore}
+      className={`group flex items-center gap-2 px-6 py-3 rounded-full font-semibold backdrop-blur-md focus:outline-none ${colorClass}`}
+    >
+      View All
+      <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+    </button>
+  </Motion.div>
+);
+
+function HomeUI({ contests, loading, handleExplore }) {
   const container = {
     hidden: {},
     show: {
@@ -18,29 +41,6 @@ function HomeUI({ contests, loading, error, handleExplore }) {
     hidden: { opacity: 0, y: 40 },
     show: { opacity: 1, y: 0 },
   };
-
-  const SectionHeader = ({ title, subtitle, colorClass }) => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col md:flex-row justify-between md:items-end mb-12 gap-4 px-2 md:px-4"
-    >
-      <div>
-        <h2 className="text-3xl md:text-4xl font-bold text-slate-900">
-          {title}
-        </h2>
-        <p className="text-slate-500 text-sm md:text-base">{subtitle}</p>
-      </div>
-
-      <button
-        onClick={handleExplore}
-        className={`group flex items-center gap-2 px-6 py-3 rounded-full font-semibold backdrop-blur-md focus:outline-none ${colorClass}`}
-      >
-        View All
-        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-      </button>
-    </motion.div>
-  );
 
   return (
     <div className="min-h-screen w-full bg-gradient-to-br from-slate-50 via-white to-slate-100">
@@ -57,6 +57,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
             title="Ongoing Challenges"
             subtitle="Join contests that are live right now"
             colorClass="bg-green-400 text-slate-700 hover:bg-green-500"
+            handleExplore={handleExplore}
           />
 
           {loading && (
@@ -65,7 +66,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
             </div>
           )}
 
-          <motion.div
+          <Motion.div
             variants={container}
             initial="hidden"
             animate="show"
@@ -75,7 +76,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
               .filter((c) => c.type === "Ongoing")
               .slice(0, 4)
               .map((contest) => (
-                <motion.div
+                <Motion.div
                   key={contest._id}
                   variants={card}
                   whileHover={{ y: -6, scale: 1.015 }}
@@ -90,9 +91,9 @@ function HomeUI({ contests, loading, error, handleExplore }) {
                       <ContestCard contest={contest} />
                     </Suspense>
                   </div>
-                </motion.div>
+                </Motion.div>
               ))}
-          </motion.div>
+          </Motion.div>
         </section>
 
         {/* Upcoming */}
@@ -101,9 +102,10 @@ function HomeUI({ contests, loading, error, handleExplore }) {
             title="Upcoming Challenges"
             subtitle="Mark your calendar for these events"
             colorClass="bg-green-400 text-slate-700 hover:bg-green-700"
+            handleExplore={handleExplore}
           />
 
-          <motion.div
+          <Motion.div
             variants={container}
             initial="hidden"
             animate="show"
@@ -113,7 +115,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
               .filter((c) => c.type === "Upcoming")
               .slice(0, 4)
               .map((contest) => (
-                <motion.div
+                <Motion.div
                   key={contest._id}
                   variants={card}
                   whileHover={{ y: -6, scale: 1.015 }}
@@ -127,14 +129,14 @@ function HomeUI({ contests, loading, error, handleExplore }) {
                       <ContestCard contest={contest} />
                     </Suspense>
                   </div>
-                </motion.div>
+                </Motion.div>
               ))}
-          </motion.div>
+          </Motion.div>
         </section>
 
         {/* Empty */}
         {!loading && contests.length === 0 && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="text-center py-24 rounded-3xl bg-white/40 backdrop-blur-xl"
@@ -142,7 +144,7 @@ function HomeUI({ contests, loading, error, handleExplore }) {
             <p className="text-slate-400 text-lg">
               No contests available at the moment.
             </p>
-          </motion.div>
+          </Motion.div>
         )}
       </main>
     </div>

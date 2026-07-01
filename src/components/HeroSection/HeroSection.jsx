@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from "react";
+import React, { useEffect, useRef, useState, useMemo, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getContest } from "../../features/contestSlice/contestSlice";
@@ -24,17 +24,7 @@ const HeroContainer = () => {
       .slice(0, 5);
   }, [contests]);
 
-  useEffect(() => {
-    if (upcomingContests.length > 1) {
-      const interval = setInterval(() => {
-        const nextIndex = (activeIndex + 1) % upcomingContests.length;
-        scrollToSlide(nextIndex);
-      }, 3000);
-      return () => clearInterval(interval);
-    }
-  }, [activeIndex, upcomingContests.length]);
-
-  const scrollToSlide = (index) => {
+  const scrollToSlide = useCallback((index) => {
     if (!scrollRef.current) return;
 
     const width = scrollRef.current.offsetWidth;
@@ -48,7 +38,17 @@ const HeroContainer = () => {
     });
 
     setActiveIndex(index);
-  };
+  }, [activeIndex, upcomingContests.length]);
+
+  useEffect(() => {
+    if (upcomingContests.length > 1) {
+      const interval = setInterval(() => {
+        const nextIndex = (activeIndex + 1) % upcomingContests.length;
+        scrollToSlide(nextIndex);
+      }, 3000);
+      return () => clearInterval(interval);
+    }
+  }, [activeIndex, upcomingContests.length, scrollToSlide]);
 
   const handleScroll = () => {
     if (scrollRef.current) {

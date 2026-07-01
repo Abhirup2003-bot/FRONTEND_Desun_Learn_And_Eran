@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import ContestCard from "../components/Card/ContestCard";
 import { Link } from "react-router-dom";
 import {
@@ -34,7 +34,7 @@ function ContestPageUI({
       {/* 🔥 Overlay (Mobile) */}
       <AnimatePresence>
         {isSidebarOpen && (
-          <motion.div
+          <Motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.4 }}
             exit={{ opacity: 0 }}
@@ -50,7 +50,7 @@ function ContestPageUI({
         <div className="hidden md:block fixed left-0 top-0 h-full w-2 z-40" />
 
         {/* 🔥 Sidebar */}
-        <motion.div
+        <Motion.div
           onMouseEnter={() => {
             hoverTimeout.current = setTimeout(() => {
               setIsHovered(true);
@@ -82,13 +82,13 @@ function ContestPageUI({
           {/* Header */}
           <div className="flex justify-between items-center mb-6">
             {isHovered && (
-              <motion.h2
+              <Motion.h2
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent"
               >
                 🚀 Contests
-              </motion.h2>
+              </Motion.h2>
             )}
 
             <button
@@ -105,7 +105,7 @@ function ContestPageUI({
               const active = filter === item.name;
 
               return (
-                <motion.button
+                <Motion.button
                   key={item.name}
                   whileTap={{ scale: 0.92 }}
                   whileHover={{ scale: 1.05 }}
@@ -123,7 +123,7 @@ function ContestPageUI({
                 >
                   {/* 🎯 Active indicator */}
                   {active && (
-                    <motion.div
+                    <Motion.div
                       layoutId="activeIndicator"
                       className="absolute left-0 top-2 bottom-2 w-1 rounded-full bg-indigo-500"
                     />
@@ -135,7 +135,7 @@ function ContestPageUI({
                   {/* Label */}
                   <AnimatePresence>
                     {isHovered && (
-                      <motion.span
+                      <Motion.span
                         initial={{ opacity: 0, x: -8 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -8 }}
@@ -143,14 +143,14 @@ function ContestPageUI({
                         className="font-medium whitespace-nowrap hidden md:block"
                       >
                         {item.name}
-                      </motion.span>
+                      </Motion.span>
                     )}
                   </AnimatePresence>
-                </motion.button>
+                </Motion.button>
               );
             })}
           </div>
-        </motion.div>
+        </Motion.div>
       </div>
 
       {/* 🔥 Main Content */}
@@ -167,20 +167,20 @@ function ContestPageUI({
           </div>
 
           {/* Mobile Filter Button */}
-          <motion.button
+          <Motion.button
             whileTap={{ scale: 0.9 }}
             onClick={() => setIsSidebarOpen(true)}
             className="md:hidden flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg shadow"
           >
             <FaFilter />
             Filters
-          </motion.button>
+          </Motion.button>
         </div>
 
         {/* Loading */}
         {loading && (
           <div className="flex justify-center mt-20">
-            <motion.div
+            <Motion.div
               animate={{ rotate: 360 }}
               transition={{ repeat: Infinity, duration: 1 }}
               className="h-10 w-10 border-b-2 border-indigo-600 rounded-full"
@@ -190,24 +190,24 @@ function ContestPageUI({
 
         {/* Error */}
         {error && (
-          <motion.p
+          <Motion.p
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             className="text-red-500 bg-red-100 p-3 rounded-lg"
           >
             {error}
-          </motion.p>
+          </Motion.p>
         )}
 
         {/* Cards */}
-        <motion.div
+        <Motion.div
           layout
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
         >
           <AnimatePresence>
             {filteredContests?.length > 0
               ? filteredContests.map((contest) => (
-                  <motion.div
+                  <Motion.div
                     key={contest._id}
                     layout
                     initial={{ opacity: 0, y: 40 }}
@@ -216,17 +216,17 @@ function ContestPageUI({
                     transition={{ duration: 0.3 }}
                   >
                     <Link to={`/contest/${contest._id}`} className="h-full">
-                      <motion.div
+                      <Motion.div
                         whileHover={{ y: -8, scale: 1.02 }}
                         className="h-full"
                       >
                         <ContestCard contest={contest} />
-                      </motion.div>
+                      </Motion.div>
                     </Link>
-                  </motion.div>
+                  </Motion.div>
                 ))
               : !loading && (
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     className="col-span-full text-center mt-20"
@@ -237,10 +237,10 @@ function ContestPageUI({
                     <p className="text-gray-400 text-sm mt-2">
                       Try switching filters
                     </p>
-                  </motion.div>
+                  </Motion.div>
                 )}
           </AnimatePresence>
-        </motion.div>
+        </Motion.div>
       </div>
     </div>
   );

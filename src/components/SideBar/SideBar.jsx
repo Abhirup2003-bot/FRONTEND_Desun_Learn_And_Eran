@@ -378,7 +378,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { logoutUser } from "../../features/authSlice/authSlice";
 import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 import { FaSignOutAlt } from "react-icons/fa";
 
 function Sidebar({ open, setOpen }) {
@@ -411,7 +411,7 @@ function Sidebar({ open, setOpen }) {
       {/* MOBILE OVERLAY */}
       <AnimatePresence>
         {open && (
-          <motion.div
+          <Motion.div
             className="fixed inset-0 bg-black/50 z-40 md:hidden"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -422,7 +422,7 @@ function Sidebar({ open, setOpen }) {
       </AnimatePresence>
 
       {/* SIDEBAR */}
-      <motion.aside
+      <Motion.aside
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
         animate={{ width: isExpanded ? 260 : 80 }}
@@ -442,13 +442,13 @@ function Sidebar({ open, setOpen }) {
           {/* HEADER */}
           <div className="flex justify-between items-center mb-8">
             {isExpanded && (
-              <motion.h2
+              <Motion.h2
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 className="text-lg font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent"
               >
                 Admin Panel
-              </motion.h2>
+              </Motion.h2>
             )}
 
             <div className="flex gap-2">
@@ -489,13 +489,13 @@ function Sidebar({ open, setOpen }) {
                   <Icon size={20} className="opacity-90" />
 
                   {isExpanded && (
-                    <motion.span
+                    <Motion.span
                       initial={{ opacity: 0, x: -10 }}
                       animate={{ opacity: 1, x: 0 }}
                       className="text-sm"
                     >
                       {item.name}
-                    </motion.span>
+                    </Motion.span>
                   )}
 
                   {!isExpanded && (
@@ -541,7 +541,7 @@ function Sidebar({ open, setOpen }) {
             </div>
           </div>
         </div>
-      </motion.aside>
+      </Motion.aside>
     </>
   );
 }

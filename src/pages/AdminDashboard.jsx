@@ -240,7 +240,7 @@ export default function AdminDashboard() {
             const projData = await projRes.json();
 
             projectsMap[id] = projData?.mag || [];
-          } catch (err) {
+          } catch {
             participantsMap[id] = [];
             projectsMap[id] = [];
           }

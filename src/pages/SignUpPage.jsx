@@ -18,12 +18,9 @@ const SignUpPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [phoneNumber, setphoneNumber] = useState("");
-  const [error, setError] = useState("");
 
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
-
-  const formData = { userName, email, password };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -36,7 +33,6 @@ const SignUpPage = () => {
 
   async function onClickHandler(e) {
     e.preventDefault();
-    setError("");
 
     const result = await dispatch(
       registerUser({ userName, email, password, phoneNumber }),
@@ -48,7 +44,6 @@ const SignUpPage = () => {
     } else {
       const errMsg = result.payload || "Signup failed";
       toast.error(errMsg);
-      setError(errMsg);
     }
   }
 

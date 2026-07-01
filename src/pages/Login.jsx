@@ -15,14 +15,11 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [error, setError] = useState("");
-
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.auth);
 
   async function onClickHandler(e) {
     e.preventDefault();
-    setError("");
 
     const result = await dispatch(loginUser({ email, password }));
 
@@ -39,7 +36,6 @@ const Login = () => {
     } else {
       const errMsg = result.payload || "Login failed";
       toast.error(errMsg);
-      setError(errMsg);
     }
   }
 
